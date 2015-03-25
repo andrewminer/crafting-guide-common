@@ -16,6 +16,13 @@ module.exports = (grunt)->
         clean:
             dist: ['./dist']
 
+        copy:
+            hooks:
+                expand: true
+                cwd: './.hooks'
+                src: '*'
+                dest: './.git/hooks'
+
         coffee:
             files:
                 expand: true
