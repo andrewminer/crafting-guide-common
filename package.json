@@ -28,6 +28,7 @@
   "homepage": "https://github.com/andrewminer/crafting-guide-common",
   "dependencies": {
     "underscore": "^1.8.2",
+    "uuid": "^2.0.1",
     "when": "^3.7.2"
   },
   "devDependencies": {

@@ -6,5 +6,7 @@ All rights reserved.
 ###
 
 module.exports =
-    Logger:        require './logger'
-    StringBuilder: require './string_builder'
+    CraftingGuideClient: require './crafting_guide_client'
+    Logger:              require './logger'
+    StringBuilder:       require './string_builder'
+    stringMixins:        require './string_mixins'
