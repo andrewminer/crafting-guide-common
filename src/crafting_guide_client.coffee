@@ -13,17 +13,72 @@ module.exports = class CraftingGuideClient
 
     @SESSION_COOKIE = 'crafting-guide-session'
 
+    @Status: Status =
+        Stale: 'stale'
+        Down:  'down'
+        Up:    'up'
+
     constructor: (options={})->
-        @_baseUrl       = options.baseUrl or 'http://localhost:8000'
-        @_headers       = options.headers or {}
-        @_sessionCookie = null
+        options.baseUrl         ?= 'http://localhost:8000'
+        options.headers         ?= {}
+        options.onStatusChanged ?= (client, oldStatus, newStatus)-> # do nothing
+
+        @baseUrl         = options.baseUrl
+        @onStatusChanged = options.onStatusChanged
+
+        @_headers        = options.headers
+        @_sessionCookie  = null
+        @_lastStatusTime = 0
+        @_monitorStatus  = false
+        @_checkingStatus = false
+        @_status         = Status.Stale
+        @_statusMaxAge   = 60000
 
     # Public Methods ###############################################################################
+
+    checkStatus: ->
+        return if @_checkingStatus
+        @_checkingStatus = true
+
+        message = _.uuid()
+        @ping message:message
+            .timeout @_statusMaxAge
+            .then (response)=>
+                if response.json.message is message
+                    @_setStatus Status.Up
+                else
+                    throw new Error "Invalid server ping response: #{response.json.message} isnt #{message}"
+            .catch (error)=>
+                @_setStatus Status.Down
+            .finally =>
+                @_checkingStatus = false
+                checkAgain = => if @_monitorStatus then @checkStatus()
+                setTimeout checkAgain, @_statusMaxAge / 2
 
     reset: ->
         @_sessionCookie = null
 
+    startMonitoringStatus: ->
+        @_monitorStatus = true
+        @checkStatus()
+
+    stopMonitoringStatus: ->
+        @_monitorStatus = false
+
+    # Property Methods #############################################################################
+
+    getStatus: ->
+        if Date.now() > @_lastStatusTime + @_statusMaxAge then return Status.Stale
+        return @_status
+
+    Object.defineProperties @prototype,
+        status: {get:@prototype.getStatus}
+
     # Request Methods ##############################################################################
+
+    completeGitHubLogin: (args={})->
+        return w.reject new Error 'args.code is required' unless args.code
+        @_sendRequest http.post, '/github/complete-login', body:args
 
     ping: (args={})->
         return w.reject new Error 'args.message is required' unless args.message
@@ -70,10 +125,18 @@ module.exports = class CraftingGuideClient
         if not typeof(method) is 'function' then throw new Error 'method must be a function'
         if not typeof(url) is 'string' then throw new Error 'url must be a string'
 
-        url = "#{@_baseUrl}#{url}"
+        url = "#{@baseUrl}#{url}"
         data.headers ?= {}
         data.headers[key] ?= value for key, value of @_headers
         if @_sessionCookie?
             data.headers['cookie'] = "#{CraftingGuideClient.SESSION_COOKIE}=#{@_sessionCookie}"
 
         @_handleResponse method url, data
+
+    _setStatus: (newStatus)->
+        oldStatus = @_status
+        return if newStatus is oldStatus
+
+        @_status = newStatus
+        @_lastStatusTime = Date.now()
+        @onStatusChanged.call null, this, oldStatus, newStatus

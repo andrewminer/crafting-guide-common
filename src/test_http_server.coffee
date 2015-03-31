@@ -1,13 +1,15 @@
 ###
-Crafting Guide Common - test_server.coffee
+Crafting Guide Common - test_http_server.coffee
 
 Copyright (c) 2015 by Redwood Labs
 All rights reserved.
 ###
 
+http = require 'http'
+
 ########################################################################################################################
 
-module.exports.TestServer = class TestHttpServer
+module.exports = class TestHttpServer
 
     constructor: (@port)->
         @requests = []

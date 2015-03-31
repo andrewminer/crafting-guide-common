@@ -9,4 +9,6 @@ module.exports =
     CraftingGuideClient: require './crafting_guide_client'
     Logger:              require './logger'
     StringBuilder:       require './string_builder'
+    TestHttpServer:      require './test_http_server'
+    http:                require './http'
     stringMixins:        require './string_mixins'
