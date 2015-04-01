@@ -46,7 +46,7 @@ sendRequest = (method, url, options={})->
     options.protocol = url.protocol
     options.method   = method
     options.hostname = url.hostname or 'localhost'
-    options.port     = url.port or 80
+    options.port     = url.port or (if url.protocol is 'http' then 80 else 443)
     options.headers  = headers
     options.path     = url.path
 

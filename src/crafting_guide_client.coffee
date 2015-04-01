@@ -11,7 +11,7 @@ http = require './http'
 
 module.exports = class CraftingGuideClient
 
-    @SESSION_COOKIE = 'crafting-guide-session'
+    @SESSION_COOKIE = 'session' # do not change!
 
     @Status: Status =
         Stale: 'stale'
@@ -22,9 +22,11 @@ module.exports = class CraftingGuideClient
         options.baseUrl         ?= 'http://localhost:8000'
         options.headers         ?= {}
         options.onStatusChanged ?= (client, oldStatus, newStatus)-> # do nothing
+        options.onLoginRequired ?= (client)-> # do nothing
 
         @baseUrl         = options.baseUrl
         @onStatusChanged = options.onStatusChanged
+        @onLoginRequired = options.onLoginRequired
 
         @_headers        = options.headers
         @_sessionCookie  = null
@@ -79,6 +81,12 @@ module.exports = class CraftingGuideClient
     completeGitHubLogin: (args={})->
         return w.reject new Error 'args.code is required' unless args.code
         @_sendRequest http.post, '/github/complete-login', body:args
+
+    fetchCurrentUser: ->
+        @_sendRequest http.get, '/github/user'
+
+    logout: ->
+        @_sendRequest http.delete, '/github/logout'
 
     ping: (args={})->
         return w.reject new Error 'args.message is required' unless args.message
