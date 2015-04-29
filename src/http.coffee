@@ -9,7 +9,6 @@ http        = require 'http'
 https       = require 'https'
 querystring = require 'querystring'
 urlParser   = require 'url'
-w           = require 'when'
 
 # Client Methods #######################################################################################################
 
@@ -50,9 +49,15 @@ sendRequest = (method, url, options={})->
     options.headers  = headers
     options.path     = url.path
 
-    logger.info "Sending HTTP request:
-        #{options.method} #{options.protocol}//#{options.hostname}:#{options.port}#{options.path}
-            with body #{requestBody}" if logger?
+    if logger?
+        message = ["Sending HTTP request: "]
+        message.push "#{options.method} #{options.protocol}//#{options.hostname}:#{options.port}#{options.path}"
+        if options.headers?
+            message.push " with headers: #{_.pp(headers)}"
+        if requestBody?
+            message.push " with body: #{requestBody}"
+
+        logger.info message.join ''
 
     httpLib = if options.protocol is 'https:' then https else http
     promise = w.promise (resolve, reject)->
