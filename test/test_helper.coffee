@@ -16,7 +16,6 @@ sinon  = require 'sinon-chai'
 chai.config.includeStack = true
 chai.use sinon
 
-global._      = require 'underscore'
 global.assert = chai.assert
 global.expect = chai.expect
 global.logger = new Logger level:Logger.DEBUG

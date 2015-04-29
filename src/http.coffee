@@ -5,10 +5,14 @@ Copyright (c) 2015 by Redwood Labs
 All rights reserved.
 ###
 
+_           = require 'underscore'
 http        = require 'http'
 https       = require 'https'
 querystring = require 'querystring'
 urlParser   = require 'url'
+w           = require 'when'
+
+_.mixin require './string_mixins'
 
 # Client Methods #######################################################################################################
 
