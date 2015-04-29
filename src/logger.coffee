@@ -5,6 +5,8 @@ Copyright (c) 2014-2015 by Redwood Labs
 All rights reserved.
 ###
 
+_ = require 'underscore'
+
 ########################################################################################################################
 
 module.exports = class Logger
@@ -35,7 +37,8 @@ module.exports = class Logger
 
     log: (level, message)->
         return unless level.value >= @level.value
-        message = message() if _.isFunction message
+        message = if _.isFunction message then "#{message()}" else "#{message}"
+        message ?= ''
 
         entry = {timestamp:new Date(), level:level, message:message, indent:@_indent}
         entry.level ?= @level
