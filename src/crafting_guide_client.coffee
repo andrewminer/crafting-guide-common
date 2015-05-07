@@ -7,6 +7,7 @@ All rights reserved.
 
 _    = require 'underscore'
 http = require './http'
+w    = require 'when'
 
 ########################################################################################################################
 
@@ -85,6 +86,11 @@ module.exports = class CraftingGuideClient
 
     fetchCurrentUser: ->
         @_sendRequest http.get, '/github/user'
+
+    fetchFile: (args={})->
+        return w.reject new Error 'args.file is required' unless args.file
+        args.file = args.file.substring(1) if args.file[0] is '/'
+        @_sendRequest http.get, "/github/file/#{args.file}"
 
     logout: ->
         @_sendRequest http.delete, '/github/logout'

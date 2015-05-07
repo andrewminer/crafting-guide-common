@@ -42,7 +42,7 @@ module.exports = (grunt)->
                 files: ['./src/**/*.coffee', './test/**/*.coffee']
                 tasks: ['coffee', 'test']
 
-    grunt.registerTask 'default', 'build'
+    grunt.registerTask 'default', ['build', 'test']
 
     grunt.registerTask 'build', ['coffee']
 
