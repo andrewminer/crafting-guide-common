@@ -92,24 +92,23 @@ module.exports = class CraftingGuideClient
         args.path = args.path.substring(1) if args.path[0] is '/'
         @_sendRequest http.get, "/github/file/#{args.path}"
 
-    updateFile: (args={})->
-        return w.reject new Error 'args.path is required' unless args.path
-        return w.reject new Error 'args.message is required' unless args.message
-        return w.reject new Error 'args.content is required' unless args.content
-        return w.reject new Error 'args.sha is required' unless args.sha
-        args.path = args.path.substring(1) if args.path[0] is '/'
-
-        url = "/github/file/#{args.path}"
-        delete args.path
-
-        @_sendRequest http.put, url, body:args
-
     logout: ->
         @_sendRequest http.delete, '/github/logout'
 
     ping: (args={})->
         return w.reject new Error 'args.message is required' unless args.message
         @_sendRequest http.get, '/ping', body:args
+
+    updateFile: (args={})->
+        return w.reject new Error 'args.path is required' unless args.path
+        return w.reject new Error 'args.message is required' unless args.message
+        return w.reject new Error 'args.content is required' unless args.content
+        args.path = args.path.substring(1) if args.path[0] is '/'
+
+        url = "/github/file/#{args.path}"
+        delete args.path
+
+        @_sendRequest http.put, url, body:args
 
     # Private Methods ##############################################################################
 
