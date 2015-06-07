@@ -87,18 +87,47 @@ module.exports = class CraftingGuideClient
     fetchCurrentUser: ->
         @_sendRequest http.get, '/github/user'
 
+    # Fetches a file from GitHub and returns it along with some meta data.
+    #
+    # @param args.path  the full path in the `crafting-guide-data` repo of the desired file
+    # @return               a JSON object containing:
+    #       status:         either 'success' or 'error'
+    #       message:        an error message if there was an error
+    #       data:           a JSON hash describing the file
+    #           content:    the base64-encoded content of the file
+    #           path:       the full path of the file (matches args.path)
+    #           sha:        the SHA1 digest of the file's current content
     fetchFile: (args={})->
         return w.reject new Error 'args.path is required' unless args.path
         args.path = args.path.substring(1) if args.path[0] is '/'
         @_sendRequest http.get, "/github/file/#{args.path}"
 
+    # Clears out the user's session
     logout: ->
         @_sendRequest http.delete, '/github/logout'
 
+    # Checks that the server is running by sending a piece of text to the server and back.
+    #
+    # @param args.message   a message to be sent to the server
+    # @return               a JSON object containing:
+    #       status:         either 'success' or 'failure'
+    #       message:        args.message if successful or an error message if there was an error
     ping: (args={})->
         return w.reject new Error 'args.message is required' unless args.message
         @_sendRequest http.get, '/ping', body:args
 
+    # Commits a file to GitHub. This can work with either a brand new file (no SHA) or an existing file (with a SHA).
+    # Attempting to update a file which already exists without providing the most recent SHA for that file will cause
+    # the request to fail. This will be the case, for example, if someone else has updated the file while the user was
+    # making his edits.
+    #
+    # @param args.path      the full path of the file in the `crafting-guide-data` repository
+    # @param args.message   the message to be used when committing the file
+    # @param args.content   the base64-encoded content of the file
+    # @param args.sha       the SHA1 digest of the previous version of the file (only if updating)
+    # @return               a JSON object containing:
+    #       status:         either 'success' or 'error'
+    #       message:        an error message if there was an error
     updateFile: (args={})->
         return w.reject new Error 'args.path is required' unless args.path
         return w.reject new Error 'args.message is required' unless args.message
