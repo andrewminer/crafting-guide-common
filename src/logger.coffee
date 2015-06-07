@@ -11,13 +11,13 @@ _ = require 'underscore'
 
 module.exports = class Logger
 
-    @TRACE   = {name:'TRACE  ', value:0}
-    @DEBUG   = {name:'DEBUG  ', value:1}
-    @VERBOSE = {name:'VERBOSE', value:2}
-    @INFO    = {name:'INFO   ', value:3}
-    @WARNING = {name:'WARNING', value:4}
-    @ERROR   = {name:'ERROR  ', value:5}
-    @FATAL   = {name:'FATAL  ', value:6}
+    @TRACE   = {name:'TRACE  ', value:0, print:console.trace}
+    @DEBUG   = {name:'DEBUG  ', value:1, print:console.debug}
+    @VERBOSE = {name:'VERBOSE', value:2, print:console.log}
+    @INFO    = {name:'INFO   ', value:3, print:console.info}
+    @WARNING = {name:'WARNING', value:4, print:console.warn}
+    @ERROR   = {name:'ERROR  ', value:5, print:console.error}
+    @FATAL   = {name:'FATAL  ', value:6, print:console.error}
 
     ALL_LEVELS = [@TRACE, @DEBUG, @VERBOSE, @INFO, @WARNING, @ERROR, @FATAL]
 
@@ -44,10 +44,8 @@ module.exports = class Logger
         entry.level ?= @level
 
         lines = @_formatEntry entry
-        if entry.level.value < Logger.WARNING.value
-            console.log(line) for line in lines
-        else
-            console.error(line) for line in lines
+        entry.level.print ?= console.log
+        entry.level.print.call console, line for line in lines
 
     outdent: ->
         @_indent = @_indent[0...@_indent.length - 4]
