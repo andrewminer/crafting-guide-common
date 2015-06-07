@@ -11,6 +11,7 @@ uuid = require 'uuid'
 ########################################################################################################################
 
 exports.ellipsize = ellipsize = (s, length=25)->
+    s ?= ''
     ellipsis = '...'
     wordSearchBuffer = 10
 
