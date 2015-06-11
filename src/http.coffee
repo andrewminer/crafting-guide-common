@@ -59,7 +59,10 @@ sendRequest = (method, url, options={})->
         if options.headers?
             message.push " with headers: #{_.pp(headers)}"
         if requestBody?
-            message.push " with body: #{requestBody}"
+            if requestBody.length > 250
+                message.push " with body of #{requestBody.length} bytes"
+            else
+                message.push " with body: #{requestBody}"
 
         logger.info message.join ''
 
