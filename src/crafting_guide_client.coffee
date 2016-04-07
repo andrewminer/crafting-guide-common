@@ -21,17 +21,19 @@ module.exports = class CraftingGuideClient
         Up:    'up'
 
     constructor: (options={})->
-        options.baseUrl         ?= 'http://localhost:8000'
-        options.headers         ?= {}
-        options.onStatusChanged ?= (client, oldStatus, newStatus)-> # do nothing
-        options.onLoginRequired ?= (client)-> # do nothing
+        options.baseUrl          ?= 'http://localhost:8000'
+        options.headers          ?= {}
+        options.onStatusChanged  ?= (client, oldStatus, newStatus)-> # do nothing
+        options.onSessionChanged ?= (session)-> # do nothing
+        options.onLoginRequired  ?= (client)-> # do nothing
 
-        @baseUrl         = options.baseUrl
-        @onStatusChanged = options.onStatusChanged
-        @onLoginRequired = options.onLoginRequired
+        @baseUrl          = options.baseUrl
+        @onSessionChanged = options.onSessionChanged
+        @onStatusChanged  = options.onStatusChanged
+        @onLoginRequired  = options.onLoginRequired
 
         @_headers        = options.headers
-        @_sessionCookie  = null
+        @_session        = options.session
         @_lastStatusTime = 0
         @_monitorStatus  = false
         @_checkingStatus = false
@@ -60,7 +62,7 @@ module.exports = class CraftingGuideClient
                 setTimeout checkAgain, @_statusMaxAge / 2
 
     reset: ->
-        @_sessionCookie = null
+        @session = null
 
     startMonitoringStatus: ->
         @_monitorStatus = true
@@ -71,12 +73,23 @@ module.exports = class CraftingGuideClient
 
     # Property Methods #############################################################################
 
+    getSession: ->
+        return @_session
+
+    setSession: (newSession)->
+        oldSession = @_session
+        return if oldSession is newSession
+
+        @_session = newSession
+        @_onSessionChanged newSession
+
     getStatus: ->
         if Date.now() > @_lastStatusTime + @_statusMaxAge then return Status.Stale
         return @_status
 
     Object.defineProperties @prototype,
-        status: {get:@prototype.getStatus}
+        status: { get:@prototype.getStatus }
+        session: { get:@prototype.getSession, set:@prototype.setSession }
 
     # Request Methods ##############################################################################
 
@@ -170,7 +183,7 @@ module.exports = class CraftingGuideClient
                 for cookieLine in response.headers['set-cookie']
                     [name, value] = cookieLine.split(';')[0].split('=')
                     if name is CraftingGuideClient.SESSION_COOKIE
-                        @_sessionCookie = value
+                        @session = value
 
             if next? then response = next response
             return response
@@ -187,8 +200,8 @@ module.exports = class CraftingGuideClient
         url = "#{@baseUrl}#{url}"
         data.headers ?= {}
         data.headers[key] ?= value for key, value of @_headers
-        if @_sessionCookie?
-            data.headers['cookie'] = "#{CraftingGuideClient.SESSION_COOKIE}=#{@_sessionCookie}"
+        if @session?
+            data.headers['cookie'] = "#{CraftingGuideClient.SESSION_COOKIE}=#{@session}"
 
         @_handleResponse method url, data
 

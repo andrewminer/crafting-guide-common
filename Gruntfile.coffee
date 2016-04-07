@@ -1,9 +1,9 @@
-###
+#
 # Crafting Guide - Gruntfile.coffee
 #
-# Copyright (c) 2014 by Redwood Labs
+# Copyright © 2014-2016 by Redwood Labs
 # All rights reserved.
-###
+#
 
 ########################################################################################################################
 
@@ -42,10 +42,22 @@ module.exports = (grunt)->
                 files: ['./src/**/*.coffee', './test/**/*.coffee']
                 tasks: ['coffee', 'test']
 
-    grunt.registerTask 'default', ['build', 'test']
+    # Composite Tasks ##############################################################################
 
-    grunt.registerTask 'build', ['coffee']
+    grunt.registerTask 'default', 'build the code and run tests',
+        ['build', 'test']
 
-    grunt.registerTask 'develop', ['clean', 'build', 'test', 'watch']
+    grunt.registerTask 'build', 'build the code',
+        ['coffee']
 
-    grunt.registerTask 'test', ['mochaTest']
+    grunt.registerTask 'publish', 'build the code and publish to NPM',
+        ['build', 'test', 'script:publish']
+
+    grunt.registerTask 'test', 'run unit tests',
+        ['mochaTest']
+
+    # Script Tasks #####################################################################################################
+
+    grunt.registerTask 'script:publish', 'publishes this package to NPM', ->
+      done = this.async()
+      grunt.util.spawn cmd:'./scripts/publish', opts:{stdio:'inherit'}, (error)-> done(error)
