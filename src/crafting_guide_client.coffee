@@ -81,7 +81,7 @@ module.exports = class CraftingGuideClient
         return if oldSession is newSession
 
         @_session = newSession
-        @_onSessionChanged newSession
+        @onSessionChanged newSession
 
     getStatus: ->
         if Date.now() > @_lastStatusTime + @_statusMaxAge then return Status.Stale
