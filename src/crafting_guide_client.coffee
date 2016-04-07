@@ -179,9 +179,6 @@ module.exports = class CraftingGuideClient
             if response.json.status isnt 'success'
                 @_reject response, "API request was unsuccessful: "
 
-            for header, value of response.headers
-                response.headers[header.toLowerCase()] = value
-
             if response.headers['set-cookie']
                 for cookieLine in response.headers['set-cookie']
                     [name, value] = cookieLine.split(';')[0].split('=')

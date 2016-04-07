@@ -46,12 +46,13 @@ sendRequest = (method, url, options={})->
                 options.contentType ?= 'application/json'
                 headers['content-type'] = options.contentType
 
-    options.protocol = url.protocol
-    options.method   = method
-    options.hostname = url.hostname or 'localhost'
-    options.port     = url.port or (if url.protocol is 'http' then 80 else 443)
-    options.headers  = headers
-    options.path     = url.path
+    options.protocol        = url.protocol
+    options.method          = method
+    options.hostname        = url.hostname or 'localhost'
+    options.port            = url.port or (if url.protocol is 'http' then 80 else 443)
+    options.headers         = headers
+    options.path            = url.path
+    options.withCredentials = true
 
     if logger?
         message = ["Sending HTTP request: "]
