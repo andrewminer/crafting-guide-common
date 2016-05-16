@@ -1,9 +1,9 @@
-###
-Crafting Guide Common - string_mixins.coffee
-
-Copyright (c) 2015 by Redwood Labs
-All rights reserved.
-###
+#
+# Crafting Guide - string_mixins.coffee
+#
+# Copyright © 2014-2016 by Redwood Labs
+# All rights reserved.
+#
 
 _    = require 'underscore'
 uuid = require 'uuid'

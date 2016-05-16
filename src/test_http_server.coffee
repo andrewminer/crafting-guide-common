@@ -1,9 +1,9 @@
-###
-Crafting Guide Common - test_http_server.coffee
-
-Copyright (c) 2015 by Redwood Labs
-All rights reserved.
-###
+#
+# Crafting Guide - test_http_server.coffee
+#
+# Copyright © 2014-2016 by Redwood Labs
+# All rights reserved.
+#
 
 http = require 'http'
 

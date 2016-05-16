@@ -1,9 +1,9 @@
-###
-Crafting Guide Common - offline_crafting_guide_client.coffee
-
-Copyright (c) 2015 by Redwood Labs
-All rights reserved.
-###
+#
+# Crafting Guide - offline_crafting_guide_client.coffee
+#
+# Copyright © 2014-2016 by Redwood Labs
+# All rights reserved.
+#
 
 w = require 'when'
 

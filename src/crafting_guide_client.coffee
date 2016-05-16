@@ -1,9 +1,9 @@
-###
-Crafting Guide Common - crafting_guide_client.coffee
-
-Copyright (c) 2015 by Redwood Labs
-All rights reserved.
-###
+#
+# Crafting Guide - crafting_guide_client.coffee
+#
+# Copyright © 2014-2016 by Redwood Labs
+# All rights reserved.
+#
 
 _    = require 'underscore'
 http = require './http'
@@ -61,9 +61,6 @@ module.exports = class CraftingGuideClient
                 checkAgain = => if @_monitorStatus then @checkStatus()
                 setTimeout checkAgain, @_statusMaxAge / 2
 
-    reset: ->
-        @session = null
-
     startMonitoringStatus: ->
         @_monitorStatus = true
         @checkStatus()
@@ -73,32 +70,41 @@ module.exports = class CraftingGuideClient
 
     # Property Methods #############################################################################
 
-    getSession: ->
-        return @_session
-
-    setSession: (newSession)->
-        oldSession = @_session
-        return if oldSession is newSession
-
-        @_session = newSession
-        @onSessionChanged newSession
-
     getStatus: ->
         if Date.now() > @_lastStatusTime + @_statusMaxAge then return Status.Stale
         return @_status
 
     Object.defineProperties @prototype,
         status: { get:@prototype.getStatus }
-        session: { get:@prototype.getSession, set:@prototype.setSession }
 
-    # Request Methods ##############################################################################
+    # Root-Level Request Methods ###################################################################
 
-    completeGitHubLogin: (args={})->
+    # Checks that the server is running by sending a piece of text to the server and back.
+    #
+    # @param args.message   a message to be sent to the server
+    # @return               a JSON object containing:
+    #       status:         either 'success' or 'failure'
+    #       message:        args.message if successful or an error message if there was an error
+    ping: (args={})->
+        return w.reject new Error 'args.message is required' unless args.message
+        @_sendRequest http.get, '/ping', body:args
+
+    # GitHub Request Methods #######################################################################
+
+    # Creates a new server session by completing the OAuth process with GtiHub.
+    #
+    # @param args.code  the authentication code give by GitHub in the return redirect
+    # @return           a JSON object containing:
+    #       status:     either 'success' or 'failure'
+    #       message:    an error message if there was an error
+    #       data:       a JSData User model
+    createSession: (args={})->
         return w.reject new Error 'args.code is required' unless args.code
-        @_sendRequest http.post, '/github/complete-login', body:args
+        @_sendRequest http.post, '/github/session', body:args
 
-    fetchCurrentUser: ->
-        @_sendRequest http.get, '/github/user'
+    # Clears out the user's session
+    deleteSession: ->
+        @_sendRequest http.delete, '/github/session'
 
     # Fetches a file from GitHub and returns it along with some meta data.
     #
@@ -114,20 +120,6 @@ module.exports = class CraftingGuideClient
         return w.reject new Error 'args.path is required' unless args.path
         args.path = args.path.substring(1) if args.path[0] is '/'
         @_sendRequest http.get, "/github/file/#{args.path}"
-
-    # Clears out the user's session
-    logout: ->
-        @_sendRequest http.delete, '/github/logout'
-
-    # Checks that the server is running by sending a piece of text to the server and back.
-    #
-    # @param args.message   a message to be sent to the server
-    # @return               a JSON object containing:
-    #       status:         either 'success' or 'failure'
-    #       message:        args.message if successful or an error message if there was an error
-    ping: (args={})->
-        return w.reject new Error 'args.message is required' unless args.message
-        @_sendRequest http.get, '/ping', body:args
 
     # Commits a file to GitHub. This can work with either a brand new file (no SHA) or an existing file (with a SHA).
     # Attempting to update a file which already exists without providing the most recent SHA for that file will cause
@@ -151,6 +143,11 @@ module.exports = class CraftingGuideClient
         delete args.path
 
         @_sendRequest http.put, url, body:args
+
+    # User Methods #################################################################################
+
+    getCurrentUser: ->
+        @_sendRequest http.get, "/users/current"
 
     # Private Methods ##############################################################################
 

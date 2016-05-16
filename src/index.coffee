@@ -1,9 +1,9 @@
-###
-Crafting Guide Common - index.coffee
-
-Copyright (c) 2015 by Redwood Labs
-All rights reserved.
-###
+#
+# Crafting Guide - index.coffee
+#
+# Copyright © 2014-2016 by Redwood Labs
+# All rights reserved.
+#
 
 module.exports =
     CraftingGuideClient:        require './crafting_guide_client'
@@ -13,3 +13,8 @@ module.exports =
     TestHttpServer:             require './test_http_server'
     http:                       require './http'
     stringMixins:               require './string_mixins'
+
+    defineResources: (JSData)->
+        require('./js-data/mod')(JSData)
+        require('./js-data/mod_vote')(JSData)
+        require('./js-data/user')(JSData)
