@@ -144,19 +144,54 @@ module.exports = class CraftingGuideClient
 
         @_sendRequest http.put, url, body:args
 
+    # ModBallot Methods ############################################################################
+
+    # Fetches the current list of mods available for voting along with related data.  This is the same data for all
+    # users and reflects the latest cumulative votes from all users.
+    #
+    # @return               a hash of a ModBallot JSData model object
+    getModBallot: ->
+        @_sendRequest http.get, '/modBallot'
+
+    # ModVote Methods ##############################################################################
+
+    # Fetches the list of the current user's ModVotes.
+    #
+    # @return               an array of hashes generated from the ModVote JSData model
+    getModVotes: ->
+        @_sendRequest http.get, '/modVotes'
+
+    # Casts a vote for a specific mod on behalf of the current user.  The user is only permitted a limited number of
+    # votes, so the server may return an error of this has been exceeded.
+    #
+    # @param args.modId     the ID of the mod to vote for
+    # @return               a hash containing:
+    #       status:         either 'success' or 'error'
+    #       message:        an error message if there was an error
+    castVote: (args={})->
+        return w.reject new Error 'args.modId is required' unless args.modId
+        @_sendRequest http.post, '/modVotes', body:{modId:args.modId}
+
+    # Cancels the user's vote for a certain mod.
+    #
+    # @param args.modVoteId     the ID of the ModVote to cancel
+    # @return                   a hash containing:
+    #       status:             either 'success' or 'error'
+    #       message:            an error message if there was an error
+    cancelVote: (args={})->
+        return w.reject new Error 'args.modVoteId is required' unless args.modVoteId
+        @_sendRequest http.delete, "/modVotes/#{args.modVoteId}"
+
     # User Methods #################################################################################
 
     getCurrentUser: ->
-        @_sendRequest http.get, "/users/current"
+        @_sendRequest http.get, '/users/current'
 
     # Private Methods ##############################################################################
 
     _attemptJsonParsing: (response)->
         try
             response.json = JSON.parse response.body
-            response.json.status  ?= 'success'
-            response.json.message ?= 'ok'
-            response.json.data    ?= null
         catch e
             response.jsonError = e.message
 
@@ -173,8 +208,6 @@ module.exports = class CraftingGuideClient
                 @_reject response, "HTTP request was not successful: #{response.statusCode}"
             if response.jsonError
                 @_reject response, "Response contains malformed JSON: "
-            if response.json.status isnt 'success'
-                @_reject response, "API request was unsuccessful: "
 
             if response.headers['set-cookie']
                 for cookieLine in response.headers['set-cookie']

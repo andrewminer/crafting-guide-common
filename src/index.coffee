@@ -16,5 +16,7 @@ module.exports =
 
     defineResources: (JSData)->
         require('./js-data/mod')(JSData)
+        require('./js-data/mod_ballot')(JSData)
+        require('./js-data/mod_ballot_line')(JSData)
         require('./js-data/mod_vote')(JSData)
         require('./js-data/user')(JSData)
