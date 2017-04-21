@@ -1,10 +1,12 @@
-###
-# Copyright (c) 2014 by Redwood Labs
+#
+# Crafting Guide Common - string_mixins.test.coffee
+#
+# Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.
-###
+#
 
 _ = require 'underscore'
-_.mixin require '../src/string_mixins'
+_.mixin require './string_mixins'
 
 ########################################################################################################################
 

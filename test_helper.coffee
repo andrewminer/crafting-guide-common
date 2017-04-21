@@ -1,13 +1,13 @@
-###
-Crafting Guide Common - test_helper.coffee
-
-Copyright (c) 2015 by Redwood Labs
-All rights reserved.
-###
+#
+# Crafting Guide Common - test_helper.coffee
+#
+# Copyright (c) 2015 by Redwood Labs
+# All rights reserved.
+#
 
 require 'when/monitor/console'
 
-Logger = require '../src/logger'
+Logger = require './src/util/logger'
 chai   = require 'chai'
 sinon  = require 'sinon-chai'
 
@@ -20,4 +20,3 @@ global.assert = chai.assert
 global.expect = chai.expect
 global.logger = new Logger level:Logger.DEBUG
 global.should = chai.should()
-global.util   = require 'util'

@@ -1,11 +1,11 @@
 #
 # Crafting Guide - crafting_guide_client.coffee
 #
-# Copyright © 2014-2016 by Redwood Labs
+# Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.
 #
 
-_    = require 'underscore'
+_    = require '../underscore'
 http = require './http'
 w    = require 'when'
 

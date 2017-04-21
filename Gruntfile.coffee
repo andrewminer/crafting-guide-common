@@ -1,7 +1,7 @@
 #
 # Crafting Guide - Gruntfile.coffee
 #
-# Copyright © 2014-2016 by Redwood Labs
+# Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.
 #
 
@@ -20,7 +20,7 @@ module.exports = (grunt)->
             files:
                 expand: true
                 cwd:    'src'
-                src:    '**/*.coffee'
+                src:    ['**/*.coffee', '!**/*.test.coffee']
                 dest:   './dist'
                 ext:    '.js'
                 extDot: 'last'
@@ -32,26 +32,26 @@ module.exports = (grunt)->
                 reporter: 'dot'
                 require: [
                     'coffee-script/register'
-                    './test/test_helper.coffee'
+                    'test_helper.coffee'
                 ]
                 verbose: true
-            src: './test/**/*.test.coffee'
+            src: '**/*.test.coffee'
 
         watch:
             coffee:
-                files: ['./src/**/*.coffee', './test/**/*.coffee']
-                tasks: ['coffee', 'test']
+                files: ['**/*.coffee']
+                tasks: ['build', 'test']
 
     # Composite Tasks ##############################################################################
 
     grunt.registerTask 'default', 'build the code and run tests',
-        ['build', 'test']
+        ['test', 'build']
 
     grunt.registerTask 'build', 'build the code',
         ['coffee']
 
     grunt.registerTask 'publish', 'build the code and publish to NPM',
-        ['build', 'test', 'script:publish']
+        ['test', 'build', 'script:publish']
 
     grunt.registerTask 'test', 'run unit tests',
         ['mochaTest']

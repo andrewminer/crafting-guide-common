@@ -1,11 +1,11 @@
-###
-Crafting Guide - string_builder.test.coffee
+#
+# Crafting Guide Common - string_builder.test.coffee
+#
+# Copyright (c) 2015 by Redwood Labs
+# All rights reserved.
+#
 
-Copyright (c) 2015 by Redwood Labs
-All rights reserved.
-###
-
-StringBuilder = require '../src/string_builder'
+StringBuilder = require './string_builder'
 
 ########################################################################################################################
 

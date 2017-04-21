@@ -1,7 +1,7 @@
 #
 # Crafting Guide - test_http_server.coffee
 #
-# Copyright © 2014-2016 by Redwood Labs
+# Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.
 #
 
