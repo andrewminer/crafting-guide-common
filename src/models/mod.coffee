@@ -5,14 +5,17 @@
 # All rights reserved.
 #
 
+_ = require "../underscore"
+
 ########################################################################################################################
 
 module.exports = class Mod
 
     constructor: (attributes={})->
-        @id = attributes.id
         @displayName = attributes.displayName
-        @modPack = attributes.modPack
+        @id          = attributes.id
+        @modPack     = attributes.modPack
+        @version     = attributes.version
 
         @_items = {}
 
@@ -47,6 +50,12 @@ module.exports = class Mod
                 if @_modPack? then throw new Error "modPack cannot be reassigned"
                 @_modPack = modPack
                 @_modPack.addMod this
+
+        version:
+            get: -> return @_version
+            set: (version)->
+                if not _.isString(version) then version = null
+                @_version = version
 
     # Public Methods ###############################################################################
 

@@ -5,22 +5,23 @@
 # All rights reserved.
 #
 
-BaseModel = require '../base_model'
+BaseModel = require "../base_model"
+c         = require "../../constants"
 
 ########################################################################################################################
 
 module.exports = class Mod extends BaseModel
 
     constructor: (attributes={}, options={})->
-        if not attributes.slug? then throw new Error 'attributes.slug is required'
+        if not attributes.slug? then throw new Error "attributes.slug is required"
 
-        attributes.author           ?= ''
-        attributes.description      ?= ''
+        attributes.author           ?= ""
+        attributes.description      ?= ""
         attributes.documentationUrl ?= null
         attributes.downloadUrl      ?= null
         attributes.homePageUrl      ?= null
         attributes.modPack          ?= null
-        attributes.name             ?= ''
+        attributes.name             ?= ""
 
         super attributes, options
 
@@ -32,8 +33,8 @@ module.exports = class Mod extends BaseModel
     # Class Methods ##################################################################################
 
     @Version: Version =
-        None: 'none'
-        Latest: 'latest'
+        None: "none"
+        Latest: "latest"
 
     # Public Methods #################################################################################
 
@@ -70,7 +71,7 @@ module.exports = class Mod extends BaseModel
                     @_activeVersion = version
                     @_activateModVersion null
 
-                    @trigger c.event.change + ':activeVersion', this, @_activeVersion
+                    @trigger c.event.change + ":activeVersion", this, @_activeVersion
                     @trigger c.event.change, this
                 else
                     for modVersion in @_modVersions
@@ -79,7 +80,7 @@ module.exports = class Mod extends BaseModel
                             break
 
                     @_activeVersion = version
-                    @trigger c.event.change + ':activeVersion', this, @_activeVersion
+                    @trigger c.event.change + ":activeVersion", this, @_activeVersion
                     @trigger c.event.change, this
 
         enabled:
@@ -136,8 +137,8 @@ module.exports = class Mod extends BaseModel
         modVersion.fileCache = this.fileCache
         modVersion.mod = this
 
-        @trigger c.event.add + ':modVersion', modVersion, this
-        @trigger c.event.change + ':version', modVersion, this
+        @trigger c.event.add + ":modVersion", modVersion, this
+        @trigger c.event.change + ":version", modVersion, this
         @trigger c.event.change, this
 
         if not @activeVersion? then @activeVersion = modVersion.version
@@ -205,7 +206,7 @@ module.exports = class Mod extends BaseModel
     # Backbone.Model Overrides #####################################################################
 
     parse: (text)->
-        ModParser = require '../parsing/mod_parser' # to avoid require cycles
+        ModParser = require "../parsing/mod_parser" # to avoid require cycles
         @_parser ?= new ModParser model:this
         @_parser.parse text
 
@@ -221,12 +222,12 @@ module.exports = class Mod extends BaseModel
     _activateModVersion: (modVersion)->
         if @_activeModVersion? then @stopListening @_activeModVersion
         @_activeModVersion = modVersion
-        @trigger c.event.change + ':activeModVersion', this, @_activeModVersion
+        @trigger c.event.change + ":activeModVersion", this, @_activeModVersion
 
         logger.verbose => "#{@slug} switched to version #{@_activeVersion}"
 
         if @_activeModVersion?
-            @listenTo @_activeModVersion, 'all', -> @trigger.apply this, arguments
+            @listenTo @_activeModVersion, "all", -> @trigger.apply this, arguments
 
     _verifyActiveModVersion: ->
         if (@_activeVersion isnt Version.None) and (not @_activeModVersion?)

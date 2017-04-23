@@ -5,11 +5,12 @@
 # All rights reserved.
 #
 
-BaseModel        = require '../base_model'
-Mod              = require './mod'
-ModVersionParser = require '../parsing/mod_version_parser'
-Recipe           = require './recipe'
-SimpleInventory  = require '../crafting/simple_inventory'
+BaseModel        = require "../base_model"
+c                = require "../../constants"
+Inventory        = require "./inventory"
+Mod              = require "./mod"
+ModVersionParser = require "../parsing/mod_version_parser"
+Recipe           = require "./recipe"
 
 ########################################################################################################################
 
@@ -67,7 +68,7 @@ module.exports = class ModPack extends BaseModel
         return null
 
     findItemDisplay: (itemSlug)->
-        if not itemSlug? then throw new Error 'itemSlug is required'
+        if not itemSlug? then throw new Error "itemSlug is required"
 
         result = {slug:itemSlug}
         item = @findItem itemSlug, includeDisabled:true
@@ -82,7 +83,7 @@ module.exports = class ModPack extends BaseModel
             result.modSlug    = @_mods[0].slug
             result.modVersion = @_mods[0].activeVersion
 
-        craftingUrlInventory = new SimpleInventory modPack:this
+        craftingUrlInventory = new Inventory modPack:this
         if item?.multiblock?
             craftingUrlInventory.addInventory item.multiblock.inventory
         else
@@ -104,16 +105,16 @@ module.exports = class ModPack extends BaseModel
     # Mod Methods ##################################################################################
 
     addMod: (mod)->
-        if not mod? then throw new Error 'mod is required'
+        if not mod? then throw new Error "mod is required"
         return if @_mods.indexOf(mod) isnt -1
 
         mod.modPack = this
         @_mods.push mod
         @listenTo mod, c.event.change, (modVersion)=> @_onModVersionLoaded modVersion
-        @trigger c.event.add + ':mod', mod, this
+        @trigger c.event.add + ":mod", mod, this
 
         @_mods.sort (a, b)-> a.compareTo b
-        @trigger c.event.sort + ':mod', this
+        @trigger c.event.sort + ":mod", this
         @trigger c.event.change, this
 
         return this

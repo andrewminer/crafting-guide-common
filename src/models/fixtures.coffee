@@ -100,7 +100,7 @@ exports.configureCraftingTable = configureCraftingTable = (mod)->
     craftingTable = mod.modPack.findItem "crafting_table"
     if not craftingTable?
         craftingTable = createItem mod:mod, id:"crafting_table", displayName:"Crafting Table"
-        oakPlanks     = configureOakPlank mod
+        oakPlanks     = configureOakPlanks mod
 
         recipe = createRecipe output:createStack item:craftingTable
         recipe.setInputAt 0, 0, createStack item:oakPlanks
@@ -226,7 +226,7 @@ exports.configureMilkBucket = configureMilkBucket = (mod)->
 
     return milkBucket
 
-exports.configureOakPlank = configureOakPlank = (mod)->
+exports.configureOakPlanks = configureOakPlanks = (mod)->
     oakPlanks = mod.modPack.findItem "oak_planks"
     if not oakPlanks?
         oakPlanks = createItem mod:mod, id:"oak_planks", displayName:"Oak Planks"
@@ -249,7 +249,7 @@ exports.configureObsidian = configureObsidian = (mod)->
         obsidian = createItem mod:mod, id:"obsidian", displayName:"Obsidian"
     return obsidian
 
-exports.configureRedstoneDust = configureRedstoneDust = (mod)->
+exports.configureRedstone = configureRedstone = (mod)->
     redstoneDust = mod.modPack.findItem "redstone_dust"
     if not redstoneDust?
         redstoneDust = createItem mod:mod, id:"redstone_dust", displayName:"Redstone Dust"
@@ -258,7 +258,7 @@ exports.configureRedstoneDust = configureRedstoneDust = (mod)->
 exports.configureStick = configureStick = (mod)->
     stick = mod.modPack.findItem "stick"
     if not stick?
-        oakPlanks = configureOakPlank mod
+        oakPlanks = configureOakPlanks mod
         stick     = createItem mod:mod, id:"stick", displayName:"Stick"
 
         recipe = createRecipe output:createStack item:stick, quantity:4
@@ -284,9 +284,9 @@ exports.configureSaw = configureSaw = (mod)->
         craftingTable = configureCraftingTable mod
         ironBlock     = configureIronBlock mod
         ironIngot     = configureIronIngot mod
-        oakPlank      = configureOakPlank mod
+        oakPlank      = configureOakPlanks mod
         oakWood       = configureOakWood mod
-        redstoneDust  = configureRedstoneDust mod
+        redstoneDust  = configureRedstone mod
         saw           = createItem mod:mod, id:"saw", displayName:"Saw"
 
         recipe = createRecipe output:createStack item:saw

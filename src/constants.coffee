@@ -31,3 +31,5 @@ modelState.unloaded = 'unloaded'
 modelState.loading  = 'loading'
 modelState.loaded   = 'loaded'
 modelState.failed   = 'failed'
+
+exports.requiredMods = [ 'minecraft' ]

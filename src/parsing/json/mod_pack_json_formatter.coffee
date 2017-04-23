@@ -52,8 +52,8 @@ module.exports = class ModPackJsonParser
             result.mods.push @_formatMod mod
 
         if result.mods?
-            for modResult in result.mods
-                for itemResult in modResult.items
+            for modResult in result.mods or []
+                for itemResult in modResult.items or []
                     item = modPack.mods[modResult.id].items[itemResult.id]
                     for recipeId, recipe of item.recipesAsPrimary
                         itemResult.recipes ?= []

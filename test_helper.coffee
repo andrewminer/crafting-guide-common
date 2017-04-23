@@ -18,5 +18,5 @@ chai.use sinon
 
 global.assert = chai.assert
 global.expect = chai.expect
-global.logger = new Logger level:Logger.DEBUG
+global.logger = new Logger level:Logger.FATAL
 global.should = chai.should()

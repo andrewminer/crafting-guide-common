@@ -64,7 +64,7 @@ describe "ModPackJsonParser & ModPackJsonFormatter", ->
 
             beforeEach ->
                 @craftingTable = fixtures.configureCraftingTable @mod
-                @oakPlank = fixtures.configureOakPlank @mod
+                @oakPlank = fixtures.configureOakPlanks @mod
                 @runTest()
 
             it "can survive a round trip", ->
