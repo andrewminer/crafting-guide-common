@@ -8,7 +8,7 @@
 CommandParserVersionBase = require './command_parser_version_base'
 Mod                      = require '../game/mod'
 ModVersion               = require '../game/mod_version'
-Tutorial                 = require '../site/tutorial'
+Tutorial                 = require '../game/tutorial'
 
 ########################################################################################################################
 

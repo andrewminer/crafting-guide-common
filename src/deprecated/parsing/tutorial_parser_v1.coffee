@@ -6,7 +6,7 @@
 #
 
 CommandParserVersionBase = require './command_parser_version_base'
-Tutorial                 = require '../site/tutorial'
+Tutorial                 = require '../game/tutorial'
 
 ########################################################################################################################
 

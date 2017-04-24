@@ -23,6 +23,7 @@ module.exports =
             Recipe:           require "./deprecated/game/recipe"
             SimpleStack:      require "./deprecated/game/simple_stack"
             Stack:            require "./deprecated/game/stack"
+            Tutorial:         require "./deprecated/game/tutorial"
         parsing:
             ItemParser:       require "./deprecated/parsing/item_parser"
             ModParser:        require "./deprecated/parsing/mod_parser"
