@@ -26,6 +26,10 @@ event.route           = 'route'
 event.sort            = 'sort'
 event.sync            = 'sync'                # model, response
 
+exports.limits = limits = {}
+limits.maximumGraphSize = 5000
+limits.maximumPlanCount = 5000
+
 exports.modelState  = modelState = {}
 modelState.unloaded = 'unloaded'
 modelState.loading  = 'loading'

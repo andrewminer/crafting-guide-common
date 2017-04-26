@@ -1,5 +1,5 @@
 #
-# Crafting Guide - crafting_guide_client.coffee
+# Crafting Guide Common - crafting_guide_client.coffee
 #
 # Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.

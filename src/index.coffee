@@ -12,6 +12,20 @@ module.exports =
         http:                 require "./api/http"
 
     deprecated:
+        crafting:
+            CraftingNode:     require "./deprecated/crafting/crafting_node"
+            CraftingPlan:     require "./deprecated/crafting/crafting_plan"
+            CraftingStep:     require "./deprecated/crafting/crafting_step"
+            Craftsman:        require "./deprecated/crafting/craftsman"
+            fixtures:         require "./deprecated/crafting/fixtures"
+            GraphBuilder:     require "./deprecated/crafting/graph_builder"
+            InventoryNode:    require "./deprecated/crafting/inventory_node"
+            ItemNode:         require "./deprecated/crafting/item_node"
+            PlanBuilder:      require "./deprecated/crafting/plan_builder"
+            PlanEvaluator:    require "./deprecated/crafting/plan_evaluator"
+            RecipeNode:       require "./deprecated/crafting/recipe_node"
+            SimpleInventory:  require "./deprecated/crafting/simple_inventory"
+            SimpleStack:      require "./deprecated/crafting/simple_stack"
         game:
             Inventory:        require "./deprecated/game/inventory"
             ItemSlug:         require "./deprecated/game/item_slug"
@@ -29,9 +43,11 @@ module.exports =
             ModParser:        require "./deprecated/parsing/mod_parser"
             ModVersionParser: require "./deprecated/parsing/mod_version_parser"
             TutorialParser:   require "./deprecated/parsing/tutorial_parser"
-        converter:            require "./deprecated/converter"
+        BaseModel:            require "./deprecated/base_model"
+        Converter:            require "./deprecated/converter"
 
     models:
+        fixtures:             require "./models/fixtures"
         Inventory:            require "./models/inventory"
         Item:                 require "./models/item"
         ModPack:              require "./models/mod_pack"

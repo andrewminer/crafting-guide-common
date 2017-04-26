@@ -5,6 +5,8 @@
 # All rights reserved.
 #
 
+_ = require "../../underscore"
+
 ########################################################################################################################
 
 module.exports = class VersionedParserBase
@@ -47,5 +49,5 @@ module.exports = class VersionedParserBase
 
     _identifySchema: (text)->
         match = VersionedParserBase.SCHEMA.exec text
-        if not match? then throw new Error 'missing "schema" declaration'
+        if not match? then throw new Error "missing \"schema\" declaration"
         return match[1]

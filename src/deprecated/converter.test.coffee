@@ -12,7 +12,7 @@ ModPackJsonFormatter = require "../parsing/json/mod_pack_json_formatter"
 
 ########################################################################################################################
 
-describe.only "Converter", ->
+describe "Converter", ->
 
     beforeEach ->
         @oldModPack = fixtures.createModPack id:"alpha", displayName:"ALPHA"

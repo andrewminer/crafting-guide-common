@@ -1,5 +1,5 @@
 #
-# Crafting Guide - mod_version_parser_v1.test.coffee
+# Crafting Guide Common - mod_version_parser_v1.test.coffee
 #
 # Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.

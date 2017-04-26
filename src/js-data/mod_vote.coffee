@@ -1,5 +1,5 @@
 #
-# Crafting Guide - mod_vote.coffee
+# Crafting Guide Common - mod_vote.coffee
 #
 # Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.

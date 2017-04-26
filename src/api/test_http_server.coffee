@@ -1,5 +1,5 @@
 #
-# Crafting Guide - test_http_server.coffee
+# Crafting Guide Common - test_http_server.coffee
 #
 # Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.

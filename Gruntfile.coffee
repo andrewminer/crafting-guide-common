@@ -1,5 +1,5 @@
 #
-# Crafting Guide - Gruntfile.coffee
+# Crafting Guide Common - Gruntfile.coffee
 #
 # Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.

@@ -1,5 +1,5 @@
 #
-# Crafting Guide - mod_ballot_line.coffee
+# Crafting Guide Common - mod_ballot_line.coffee
 #
 # Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.

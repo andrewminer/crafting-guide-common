@@ -1,5 +1,5 @@
 #
-# Crafting Guide - tutorial_parser_v1.coffee
+# Crafting Guide Common - tutorial_parser_v1.coffee
 #
 # Copyright © 2014-2017 by Redwood Labs
 # All rights reserved.
