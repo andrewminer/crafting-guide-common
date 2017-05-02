@@ -63,7 +63,8 @@ module.exports =
         Logger:               require "./util/logger"
         StringBuilder:        require "./util/string_builder"
 
-    _: require "./underscore"
+    _:         require "./underscore"
+    constants: require "./constants"
 
     defineResources: (JSData)->
         require("./js-data/mod")(JSData)
