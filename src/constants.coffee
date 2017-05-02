@@ -5,6 +5,8 @@
 # All rights reserved.
 #
 
+_ = require "./underscore"
+
 ########################################################################################################################
 
 exports.event         = event = {}
@@ -37,3 +39,23 @@ modelState.loaded   = 'loaded'
 modelState.failed   = 'failed'
 
 exports.requiredMods = [ 'minecraft' ]
+
+exports.url          = url = {}
+url.crafting         = _.template "/craft/<%= inventoryText %>"
+url.item             = _.template "/browse/<%= modSlug %>/<%= itemSlug %>/"
+url.itemData         = _.template "/data/<%= modSlug %>/items/<%= itemSlug %>/item.cg"
+url.itemIcon         = _.template "/data/<%= modSlug %>/items/<%= itemSlug %>/icon.png"
+url.itemImageDir     = _.template "/data/<%= modSlug %>/items/<%= itemSlug %>"
+url.login            = _.template "/login"
+url.mod              = _.template "/browse/<%= modSlug %>/"
+url.modData          = _.template "/data/<%= modSlug %>/mod.cg"
+url.modIcon          = _.template "/data/<%= modSlug %>/icon.png"
+url.modpackArchive   = _.template "/data/modpack.cg"
+url.modPackData      = _.template "/data/<%= modPackId %>/modpack.json"
+url.modVersionData   = _.template "/data/<%= modSlug %>/versions/<%= modVersion %>/mod-version.cg"
+url.root             = _.template "/"
+url.tutorial         = _.template "/browse/<%= modSlug %>/tutorials/<%= tutorialSlug %>/"
+url.tutorialData     = _.template "/data/<%= modSlug %>/tutorials/<%= tutorialSlug %>/tutorial.cg"
+url.tutorialIcon     = _.template "/data/<%= modSlug %>/tutorials/<%= tutorialSlug %>/icon.png"
+url.tutorialIcon     = _.template "/data/<%= modSlug %>/tutorials/<%= tutorialSlug %>/icon.png"
+url.tutorialImageDir = _.template "/data/<%= modSlug %>/tutorials/<%= tutorialSlug %>"
