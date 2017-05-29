@@ -53,6 +53,18 @@ module.exports = class ModPack
 
         return null
 
+    findRecipe: (recipeId)->
+        for modId, mod of @mods
+            for itemId, item of mod.items
+                for currentRecipeId, recipe of item.recipesAsPrimary
+                    if recipeId is currentRecipeId
+                        return recipe
+                for currentRecipeId, recipe of item.recipesAsExtra
+                    if recipeId is currentRecipeId
+                        return recipe
+
+        return null
+
     # Object Overrides #############################################################################
 
     toString: ->

@@ -46,12 +46,8 @@ module.exports = class Item
 
         isGatherable: # whether this item can be gathered directly without needing to be crafted
             get: ->
-                return true if @_isGatherable is true
-                return false if (id for id, recipe of @_recipesAsPrimary).length > 0
-                return false if (id for id, recipe of @_recipesAsExtra).length > 0
-                return true
+                return @_isGatherable
             set: (isGatherable)->
-                @_isGatherable = null unless isGatherable?
                 @_isGatherable = !!isGatherable
 
         mod: # the Mod which adds this item to the game

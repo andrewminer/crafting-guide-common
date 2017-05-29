@@ -14,9 +14,11 @@ module.exports = class ModPackJsonParser
 
     # Public Methods ###############################################################################
 
-    format: (modPack)->
+    format: (modPack, options={})->
+        options.indent ?= 0
+
         @_reset()
-        return JSON.stringify @_formatModPack modPack
+        return JSON.stringify @_formatModPack(modPack), null, options.indent
 
     # Private Methods ##############################################################################
 
