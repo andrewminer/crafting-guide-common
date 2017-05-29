@@ -38,6 +38,9 @@ modelState.loading  = 'loading'
 modelState.loaded   = 'loaded'
 modelState.failed   = 'failed'
 
+exports.modPacks = modPacks = {}
+modPacks.default = "default"
+
 exports.requiredMods = [ 'minecraft' ]
 
 exports.url          = url = {}
@@ -50,8 +53,8 @@ url.login            = _.template "/login"
 url.mod              = _.template "/browse/<%= modSlug %>/"
 url.modData          = _.template "/data/<%= modSlug %>/mod.cg"
 url.modIcon          = _.template "/data/<%= modSlug %>/icon.png"
-url.modpackArchive   = _.template "/data/modpack.cg"
-url.modPackData      = _.template "/data/<%= modPackId %>/modpack.json"
+url.modPackArchiveCG = _.template "/data/modpack.cg"
+url.modPackArchiveJS = _.template "/data/modpacks/<%= modPackId %>.json"
 url.modVersionData   = _.template "/data/<%= modSlug %>/versions/<%= modVersion %>/mod-version.cg"
 url.root             = _.template "/"
 url.tutorial         = _.template "/browse/<%= modSlug %>/tutorials/<%= tutorialSlug %>/"

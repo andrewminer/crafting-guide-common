@@ -93,7 +93,7 @@ exports.configureCoal = configureCoal = (mod)->
 exports.configureCobblestone = configureCobblestone = (mod)->
     cobblestone = mod.modPack.findItem "cobblestone"
     if not cobblestone?
-        cobblestone = createItem mod:mod, displayName:"Cobblestone"
+        cobblestone = createItem mod:mod, id:"cobblestone", displayName:"Cobblestone"
     return cobblestone
 
 exports.configureCraftingTable = configureCraftingTable = (mod)->
@@ -121,7 +121,7 @@ exports.configureFurnace = configureFurnace = (mod)->
     if not furnace?
         cobblestone   = configureCobblestone mod
         craftingTable = configureCraftingTable mod
-        furnace       = createItem mod:mod, displayName:"Furnace"
+        furnace       = createItem mod:mod, id:"furnace", displayName:"Furnace"
 
         recipe = createRecipe output:createStack item:furnace
         recipe.setInputAt 0, 0, createStack item:cobblestone
@@ -218,7 +218,7 @@ exports.configureMilkBucket = configureMilkBucket = (mod)->
     if not milkBucket?
         bucket     = configureBucket mod
         milk       = configureMilk mod
-        milkBucket = createItem mod:mod, id:"milkBucket", displayName:"Milk Bucket"
+        milkBucket = createItem mod:mod, id:"milk_bucket", displayName:"Milk Bucket"
 
         recipe = createRecipe output:createStack item:milkBucket
         recipe.setInputAt 1, 0, createStack item:milk
