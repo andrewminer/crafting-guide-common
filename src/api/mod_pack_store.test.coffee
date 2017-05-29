@@ -13,16 +13,17 @@ w                    = require "when"
 
 ########################################################################################################################
 
-deferred = http = loading = loadResult = store = null
+baseUrl = deferred = http = loading = loadResult = store = null
 
 ########################################################################################################################
 
 describe "ModPackStore", ->
 
     beforeEach ->
+        baseUrl = "http://localhost:8080/api"
         loading = null
         http    = get:sinon.stub().callsFake -> return loading
-        store   = new ModPackStore http
+        store   = new ModPackStore http, baseUrl
 
     describe "by default", ->
 
@@ -56,7 +57,8 @@ describe "ModPackStore", ->
                 return loading
 
             it "made an HTTP call for the raw data", ->
-                http.get.should.be.calledWith c.url.modPackArchiveJS modPackId:"default"
+                url = baseUrl + c.url.modPackArchiveJS modPackId:"default"
+                http.get.should.be.calledWith url
 
             it "returns a properly formed mod pack from `get`", ->
                 modPack = store.get "default"

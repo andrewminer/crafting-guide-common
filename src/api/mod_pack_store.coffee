@@ -13,16 +13,23 @@ ModPackJsonParser = require "../parsing/json/mod_pack_json_parser"
 
 module.exports = class ModPackStore
 
-    constructor: (http)->
+    constructor: (http, baseUrl)->
         @_loading  = {}
         @_modPacks = {}
         @_parser   = new ModPackJsonParser
 
-        @http = http
+        @baseUrl = baseUrl
+        @http    = http
 
     # Properties ###################################################################################
 
     Object.defineProperties @prototype,
+        baseUrl:
+            get: -> return @_baseUrl
+            set: (baseUrl)->
+                if not _.isString(baseUrl) then throw new Error "baseUrl must be a string"
+                @_baseUrl = baseUrl
+
         http:
             get: -> return @_http
             set: (http)->
@@ -38,7 +45,7 @@ module.exports = class ModPackStore
     load: (modPackId)->
         if @_loading[modPackId]? then return @_loading[modPackId]
 
-        url = c.url.modPackArchiveJS modPackId:modPackId
+        url = @baseUrl + c.url.modPackArchiveJS modPackId:modPackId
         @_loading[modPackId] = @http.get url
             .then (jsonText)=>
                 @_modPacks[modPackId] = @_parser.parse jsonText, url
