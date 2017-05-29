@@ -84,7 +84,7 @@ module.exports = class Logger
         for line in message.split '\n'
             result = []
             result.push @_format
-                timestamp: "#{entry.timestamp}"
+                timestamp: "#{entry.timestamp.toISOString()}"
                 level:     entry.level.name
                 message:   line
                 indent:    entry.indent
