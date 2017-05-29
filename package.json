@@ -1,6 +1,6 @@
 {
   "name": "crafting-guide-common",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "description": "Shared files between the Crafting Guide client and server",
   "main": "./dist/index.js",
   "directories": {
