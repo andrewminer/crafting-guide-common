@@ -5,6 +5,7 @@
 # All rights reserved.
 #
 
+Stack         = require "./stack"
 StringBuilder = require '../util/string_builder'
 
 ########################################################################################################################
@@ -133,6 +134,16 @@ module.exports = class Recipe
             [x, y] = arguments
 
         return @_inputGrid[x]?[y]?[z] or null
+
+    getInputs: ->
+        result = []
+
+        for x in [0...@width]
+            for y in [0...@height]
+                for z in [0...@depth]
+                    result.push @getInputAt x, y, z
+
+        return result
 
     setInputAt: ->
         [x, y, z, stack] = [0, 0, 0, null]
