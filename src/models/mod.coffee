@@ -12,6 +12,7 @@ _ = require "../underscore"
 module.exports = class Mod
 
     constructor: (attributes={})->
+        @description = attributes.description
         @displayName = attributes.displayName
         @id          = attributes.id
         @modPack     = attributes.modPack
@@ -22,6 +23,12 @@ module.exports = class Mod
     # Properties ###################################################################################
 
     Object.defineProperties @prototype,
+
+        description:
+            get: -> return @_description
+            set: (description)->
+                description = if _.isString(description) and (description.length > 0) then description else null
+                @_description = description
 
         displayName:
             get: -> return @_displayName
