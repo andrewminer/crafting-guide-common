@@ -197,11 +197,6 @@ module.exports = class CraftingGuideClient
 
     _handleResponse: (requesting, next)->
         requesting.then (response)=>
-            if logger?
-                if response.body.length > 250
-                    logger.info "Received HTTP response: #{response.statusCode} with #{response.body.length} bytes"
-                else
-                    logger.info "Received HTTP response: #{response.statusCode} - #{response.body}"
             @_attemptJsonParsing response
             if response.statusCode isnt 200
                 @onLoginRequired() if response.statusCode is 401

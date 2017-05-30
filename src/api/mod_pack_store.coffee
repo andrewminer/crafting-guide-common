@@ -47,8 +47,6 @@ module.exports = class ModPackStore
 
         url = @baseUrl + c.url.modPackArchiveJS modPackId:modPackId
         @_loading[modPackId] = @http.get url
-            .then (jsonText)=>
-                @_modPacks[modPackId] = @_parser.parse jsonText, url
-            .catch (error)->
-                logger.error "failed to load mod pack #{modPackId}: #{error}"
-                throw error
+            .then (response)=>
+                if response.statusCode isnt 200 then throw new Error "#{response.statusCode} #{response.body}"
+                @_modPacks[modPackId] = @_parser.parse response.body, url

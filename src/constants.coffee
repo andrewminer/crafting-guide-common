@@ -39,7 +39,7 @@ modelState.loaded   = 'loaded'
 modelState.failed   = 'failed'
 
 exports.modPacks = modPacks = {}
-modPacks.default = "default"
+modPacks.default = "crafting-guide"
 
 exports.requiredMods = [ 'minecraft' ]
 

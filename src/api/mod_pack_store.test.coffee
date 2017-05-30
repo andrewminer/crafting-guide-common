@@ -45,6 +45,10 @@ describe "ModPackStore", ->
         it "still returns undefined for the mod pack itself", ->
             expect(store.get("default")).toBeUndefined
 
+        it "made an HTTP call for the raw data", ->
+            url = baseUrl + c.url.modPackArchiveJS modPackId:"default"
+            http.get.should.be.calledWith url
+
         describe "when loading is complete", ->
 
             beforeEach ->
@@ -53,12 +57,8 @@ describe "ModPackStore", ->
                 fixtures.configureBucket mod
 
                 formatter = new ModPackJsonFormatter
-                deferred.resolve formatter.format modPack
-                return loading
-
-            it "made an HTTP call for the raw data", ->
-                url = baseUrl + c.url.modPackArchiveJS modPackId:"default"
-                http.get.should.be.calledWith url
+                deferred.resolve statusCode:200, body:formatter.format modPack
+                return loadResult
 
             it "returns a properly formed mod pack from `get`", ->
                 modPack = store.get "default"
@@ -86,3 +86,14 @@ describe "ModPackStore", ->
 
                 it "the load promise resolves to the mod pack returned by the store", ->
                     loadResult.inspect().value.should.equal store.get "default"
+
+        describe "when loading fails", ->
+
+            beforeEach ->
+                deferred.resolve statusCode:404, body:"Unknown Mod Pack"
+                return loadResult.catch -> # it's expected to fail
+
+            it "the loading promise resolves to the expected error", ->
+                loadResult.inspect().state.should.equal "rejected"
+                loadResult.catch (error)->
+                    error.message.should.equal "404 Unknown Mod Pack"

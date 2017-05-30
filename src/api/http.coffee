@@ -52,9 +52,11 @@ sendRequest = (method, url, options={})->
     options.path            = url.path
     options.withCredentials = true
 
+    urlText = "#{options.method} #{options.protocol}//#{options.hostname}:#{options.port}#{options.path}"
+
     if logger?
         message = ["Sending HTTP request: "]
-        message.push "#{options.method} #{options.protocol}//#{options.hostname}:#{options.port}#{options.path}"
+        message.push urlText
         if options.headers?
             message.push " with headers: #{_.pp(headers)}"
         if requestBody?
@@ -66,6 +68,7 @@ sendRequest = (method, url, options={})->
         logger.info message.join ''
 
     httpLib = if options.protocol is 'https:' then https else http
+    startTime = Date.now()
     promise = w.promise (resolve, reject)->
         request = httpLib.request options, (response)->
             if not response?
@@ -79,6 +82,28 @@ sendRequest = (method, url, options={})->
             response.on 'end', ->
                 result.body = buffer.join ''
                 resolve result
+
+                if logger?
+                    message = ""
+                    if result.body.length < 250
+                        message += "Received HTTP response for #{urlText}: #{result.statusCode} - #{result.body}"
+                    else
+                        bytes = result.body.length
+
+                        if bytes < 1000
+                            size = "#{bytes} B"
+                        else if bytes < 1000 * 1000
+                            size = "#{(bytes / 1000).toFixed(2)} kB"
+                        else
+                            size = "#{(bytes / 1000 / 1000).toFixed(2)} mB"
+
+                    if result.body.length > 250
+                        message += "Received HTTP response for #{urlText}: #{result.statusCode} " +
+                            "with #{size}"
+                    else
+
+                    message += " after #{Date.now() - startTime}ms"
+                logger.info message
 
         request.on 'error', (e)->
             logger.error "connection failed: #{e.stack}" if logger?
