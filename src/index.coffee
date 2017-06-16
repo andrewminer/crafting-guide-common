@@ -62,6 +62,7 @@ module.exports =
 
     util:
         Logger:               require "./util/logger"
+        Observable:           require "./util/observable"
         StringBuilder:        require "./util/string_builder"
 
     _:         require "./underscore"

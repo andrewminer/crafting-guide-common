@@ -47,15 +47,19 @@ module.exports = class Converter
 
     _convertItem: (oldItem, newMod)->
         itemId = oldItem.slug.toString()
-        newItem = new Item id:oldItem.slug.toString(), displayName:oldItem.name, mod:newMod
+        newItem = new Item id:oldItem.slug.toString(), displayName:oldItem.name, groupName:oldItem.group, mod:newMod
 
         if oldItem.isGatherable?
             newItem.isGatherable = oldItem.isGatherable
 
     _convertMod: (oldMod, newModPack)->
-        modId = oldMod.slug.toString()
-        version = oldMod.activeModVersion.version
-        newMod = new Mod displayName:oldMod.name, id:modId, modPack:newModPack, version:version
+        newMod = new Mod
+            author:      oldMod.author
+            description: oldMod.description
+            displayName: oldMod.name
+            id:          oldMod.slug.toString()
+            modPack:     newModPack
+            version:     oldMod.activeModVersion.version
 
         oldMod.eachItem (oldItem)=> @_convertItem oldItem, newMod
 

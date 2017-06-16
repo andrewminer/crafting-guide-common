@@ -45,7 +45,7 @@ module.exports = class ModPackStore
     load: (modPackId)->
         if @_loading[modPackId]? then return @_loading[modPackId]
 
-        url = @baseUrl + c.url.modPackArchiveJS modPackId:modPackId
+        url = @baseUrl + c.url.modPackArchive modPackId:modPackId
         @_loading[modPackId] = @http.get url
             .then (response)=>
                 if response.statusCode isnt 200 then throw new Error "#{response.statusCode} #{response.body}"

@@ -46,7 +46,7 @@ describe "ModPackStore", ->
             expect(store.get("default")).toBeUndefined
 
         it "made an HTTP call for the raw data", ->
-            url = baseUrl + c.url.modPackArchiveJS modPackId:"default"
+            url = baseUrl + c.url.modPackArchive modPackId:"default"
             http.get.should.be.calledWith url
 
         describe "when loading is complete", ->

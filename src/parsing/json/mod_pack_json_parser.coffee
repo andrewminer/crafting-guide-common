@@ -69,7 +69,9 @@ module.exports = class ModPackJsonParser
             if not modData.id? then @_throwError "mod requires an id"
             if not modData.displayName? then @_throwError "mod requires a displayName"
 
-            new Mod modPack:@_modPack, id:modData.id, displayName:modData.displayName
+            mod = new Mod modPack:@_modPack, id:modData.id, displayName:modData.displayName
+            if modData.author? then mod.author = modData.author
+            if modData.description? then mod.description = modData.description
 
     _parseItems: ->
         return unless @_data.mods?
@@ -83,7 +85,7 @@ module.exports = class ModPackJsonParser
                 if not itemData.id? then @_throwError "item requires an id"
                 if not itemData.displayName? then @_throwError "item requires a displayName"
 
-                item = new Item mod:mod, id:itemData.id, displayName:itemData.displayName
+                item = new Item mod:mod, id:itemData.id, displayName:itemData.displayName, groupName:itemData.groupName
                 item.gatherable = itemData.gatherable if itemData.gatherable?
                 @_items.push item
 

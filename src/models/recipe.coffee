@@ -5,19 +5,23 @@
 # All rights reserved.
 #
 
+Observable    = require "../util/observable"
 Stack         = require "./stack"
 StringBuilder = require '../util/string_builder'
 
 ########################################################################################################################
 
-module.exports = class Recipe
+module.exports = class Recipe extends Observable
 
     constructor: (attributes={})->
-        @depth  = attributes.depth
-        @height = attributes.height
-        @id     = attributes.id
-        @output = attributes.output
-        @width  = attributes.width
+        super
+
+        @muted =>
+            @depth  = attributes.depth
+            @height = attributes.height
+            @id     = attributes.id
+            @output = attributes.output
+            @width  = attributes.width
 
         @_extras    = {}
         @_inputs    = {}
@@ -38,6 +42,7 @@ module.exports = class Recipe
                 depth = parseInt "#{depth}"
                 depth = if Number.isNaN(depth) then 0 else Math.max(0, depth)
                 @_depth = depth
+                @trigger "change", "depth"
 
         extras: # a hash of item id to Stack of all the non-primary outputs of this recipe
             get: -> return @_extras
@@ -57,6 +62,7 @@ module.exports = class Recipe
                 height = parseInt "#{height}"
                 height = if Number.isNaN(height) then 0 else Math.max(0, height)
                 @_height = height
+                @trigger "change", "height"
 
         inputs: # a hash of item id to Item containing all the inputs to this recipe
             get: -> return @_inputs
@@ -73,6 +79,7 @@ module.exports = class Recipe
                 if @_output? then throw new Error "output cannot be reassigned"
                 @_output = output
                 @_output.item.addRecipe this
+                @trigger "change", "output"
 
         modPack: # the ModPack to which this recipe belongs
             get: -> return @_output.modPack
@@ -88,6 +95,7 @@ module.exports = class Recipe
                 width = parseInt "#{width}"
                 width = if Number.isNaN(width) then 0 else Math.max(0, width)
                 @_width = width
+                @trigger "change", "width"
 
     # Public Methods ###############################################################################
 
@@ -96,10 +104,12 @@ module.exports = class Recipe
         return if @_extras[stack.item.id] is stack
         @_extras[stack.item.id] = stack
         stack.item.addRecipe this
+        @trigger "addExtra"
 
     addTool: (item)->
         return unless item
         @_tools[item.id] = item
+        @trigger "addTool"
 
     computeQuantityRequired: (item)->
         result = 0
@@ -161,6 +171,7 @@ module.exports = class Recipe
         @_inputGrid[x][y][z] = stack
 
         if stack?.item? then @_inputs[stack.item.id] = stack.item
+        @trigger "change", "input"
 
     # Object Overrides #############################################################################
 

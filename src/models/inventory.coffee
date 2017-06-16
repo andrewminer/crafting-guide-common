@@ -5,26 +5,56 @@
 # All rights reserved.
 #
 
-Stack = require './stack'
+_          = require "../underscore"
+Observable = require "../util/observable"
+Stack      = require "./stack"
 
 ########################################################################################################################
 
-module.exports = class Inventory
+module.exports = class Inventory extends Observable
+
+    @::DELIMITERS =
+        ITEM: "."
+        STACK: ":"
 
     constructor: (inventory=null)->
+        super
+
         @_id = _.uniqueId "inventory-"
         @_stacks = {}
 
         if inventory? then @merge inventory
 
+    # Class Methods ################################################################################
+
+    @fromUrlString: (urlString, modPack)->
+        result = new Inventory
+
+        for stackPart in urlString.split @::DELIMITERS.STACK
+            if stackPart.indexOf(@::DELIMITERS.ITEM) is -1
+                quantity = 1
+                qualifiedItemSlug = stackPart
+            else
+                [quantityText, qualifiedItemSlug] = stackPart.split @::DELIMITERS.ITEM
+                quantity = parseInt quantityText
+                if _.isNaN(quantityText) then throw new Errror "invalid quantity: #{quantityText}"
+
+            [modId, itemSlug] = _.decomposeSlug qualifiedItemSlug
+            item = modPack.findItemBySlug itemSlug, modId:modId
+            if not item? then throw new Error "no item for slug: #{qualifiedItemSlug}"
+
+            result.add item, quantity
+
+        return result
+
     # Properties ###################################################################################
 
     Object.defineProperties @prototype,
 
-        isEmpty:
+        isEmpty: # whether there is any amount of any item in this inventory
             get: -> (id for id, stack of @_stacks).length is 0
 
-        stacks:
+        stacks: # a map of item id to a stack describing the contents of this inventory
             get: -> return @_stacks
             set: -> throw new Error "stacks cannot be replaced"
 
@@ -45,8 +75,11 @@ module.exports = class Inventory
         if @_stacks[item.id].quantity is 0
             delete @_stacks[item.id]
 
+        @trigger if quantity > 0 then "add" else "remove"
+
     clear: ->
         @_stacks = {}
+        @trigger "clear"
 
     contains: (item)->
         return @_stacks[item.id]?
@@ -57,13 +90,25 @@ module.exports = class Inventory
         return existingStack.quantity
 
     merge: (inventory)->
-        for id, stack of inventory.stacks
-            @add stack.item, stack.quantity
+        @muted =>
+            for id, stack of inventory.stacks
+                @add stack.item, stack.quantity
+        @trigger "merge"
 
     remove: (item, quantity)->
         @add item, -1 * quantity
 
     # Object Overrides #############################################################################
+
+    toUrlString: ->
+        parts = []
+        for itemId, stack of @stacks
+            if stack.quantity is 1
+                parts.push stack.item.qualifiedSlug
+            else
+                parts.push "#{stack.quantity}#{@DELIMITERS.ITEM}#{stack.item.qualifiedSlug}"
+
+        return parts.join @DELIMITERS.STACK
 
     toString: (options={})->
         options.full ?= false

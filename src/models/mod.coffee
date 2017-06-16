@@ -5,30 +5,48 @@
 # All rights reserved.
 #
 
-_ = require "../underscore"
+_          = require "../underscore"
+Observable = require "../util/observable"
 
 ########################################################################################################################
 
-module.exports = class Mod
+module.exports = class Mod extends Observable
+
+    @::DEFAULT_GROUP = "Other"
 
     constructor: (attributes={})->
-        @description = attributes.description
-        @displayName = attributes.displayName
-        @id          = attributes.id
-        @modPack     = attributes.modPack
-        @version     = attributes.version
+        super
+
+        @muted =>
+            @author      = attributes.author
+            @description = attributes.description
+            @displayName = attributes.displayName
+            @id          = attributes.id
+            @isEnabled   = true
+            @modPack     = attributes.modPack
+            @version     = attributes.version
 
         @_items = {}
+        @_itemGroups = {}
+        @_tutorials = []
 
     # Properties ###################################################################################
 
     Object.defineProperties @prototype,
+
+        author:
+            get: -> return @_author
+            set: (author)->
+                author = if _.isString(author) and (author.length > 0) then author else null
+                @_author = author
+                @trigger "change", "author"
 
         description:
             get: -> return @_description
             set: (description)->
                 description = if _.isString(description) and (description.length > 0) then description else null
                 @_description = description
+                @trigger "change", "description"
 
         displayName:
             get: -> return @_displayName
@@ -36,6 +54,7 @@ module.exports = class Mod
                 if not displayName? then throw new Error "displayName is required"
                 return if @_displayName is displayName
                 @_displayName = displayName
+                @trigger "change", "displayName"
 
         id:
             get: -> return @_id
@@ -44,6 +63,17 @@ module.exports = class Mod
                 return if @_id is id
                 if @_id? then throw new Error "id cannot be reassigned"
                 @_id = id
+                @trigger "change", "id"
+
+        isEnabled:
+            get: -> return @_isEnabled
+            set: (isEnabled)->
+                @_isEnabled = !! isEnabled
+                @trigger "change", "isEnabled"
+
+        itemGroups:
+            get: -> return @_itemGroups
+            set: -> throw new Error "itemGroups cannot be replaced"
 
         items:
             get: -> return @_items
@@ -57,12 +87,18 @@ module.exports = class Mod
                 if @_modPack? then throw new Error "modPack cannot be reassigned"
                 @_modPack = modPack
                 @_modPack.addMod this
+                @trigger "change", "modPack"
+
+        tutorials:
+            get: -> return @_tutorials
+            set: -> throw new Error "tutorials cannot be assigned"
 
         version:
             get: -> return @_version
             set: (version)->
                 if not _.isString(version) then version = null
                 @_version = version
+                @trigger "change", "version"
 
     # Public Methods ###############################################################################
 
@@ -71,6 +107,12 @@ module.exports = class Mod
         if @_items[item.id] is item then return
         @_items[item.id] = item
         item.mod = this
+
+        groupName = item.groupName or @DEFAULT_GROUP
+        groupList = @_itemGroups[groupName] ?= []
+        groupList.push item
+
+        @trigger "addItem"
 
     # Object Overrides #############################################################################
 

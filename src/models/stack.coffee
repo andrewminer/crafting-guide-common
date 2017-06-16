@@ -5,13 +5,18 @@
 # All rights reserved.
 #
 
+Observable = require "../util/observable"
+
 ########################################################################################################################
 
-module.exports = class Stack
+module.exports = class Stack extends Observable
 
     constructor: (attributes={})->
-        @item = attributes.item
-        @quantity = attributes.quantity
+        super
+
+        @muted =>
+            @item = attributes.item
+            @quantity = attributes.quantity
 
     # Properties ###################################################################################
 
@@ -35,6 +40,7 @@ module.exports = class Stack
                 quantity = parseInt "#{quantity}"
                 quantity = if Number.isNaN(quantity) then 0 else Math.max(0, quantity)
                 @_quantity = quantity
+                @trigger "change", "quantity"
 
     # Object Overrides #############################################################################
 

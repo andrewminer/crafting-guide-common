@@ -26,6 +26,7 @@ module.exports = class ModPackJsonParser
         result = {}
         result.id = item.id
         result.displayName = item.displayName
+        result.groupName = item.groupName
 
         if item.isGatherable and item.firstRecipe?
             result.gatherable = true
@@ -34,8 +35,10 @@ module.exports = class ModPackJsonParser
 
     _formatMod: (mod)->
         result = {}
-        result.id = mod.id
+        result.author      = mod.author
+        result.description = mod.description
         result.displayName = mod.displayName
+        result.id = mod.id
 
         for itemId, item of mod.items
             result.items ?= []

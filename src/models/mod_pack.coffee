@@ -5,13 +5,18 @@
 # All rights reserved.
 #
 
+Observable = require "../util/observable"
+
 ########################################################################################################################
 
-module.exports = class ModPack
+module.exports = class ModPack extends Observable
 
     constructor: (attributes={})->
-        @id = attributes.id
-        @displayName = attributes.displayName
+        super
+
+        @muted =>
+            @id          = attributes.id
+            @displayName = attributes.displayName
 
         @_mods = {}
 
@@ -25,6 +30,7 @@ module.exports = class ModPack
                 if not displayName? then throw new Error "displayName is required"
                 if @_displayName is displayName then return
                 @_displayName = displayName
+                @trigger "change", "displayName"
 
         id: # a string which uniquely identifies this ModPack
             get: -> return @_id
@@ -45,12 +51,31 @@ module.exports = class ModPack
         if @_mods[mod.id] is mod then return
         @_mods[mod.id] = mod
         mod.modPack = this
+        @trigger "addMod"
+
+    chooseRandomItem: ->
+        mods = (mod for modId, mod of @mods)
+        mod = mods[Math.floor(Math.random() * mods.length)]
+        items = (item for itemId, item of mod.items)
+        item = items[Math.floor(Math.random() * mods.length)]
+        return item
 
     findItem: (itemId)->
         for modId, mod of @mods
             item = mod.items[itemId]
             return item if item?
 
+        return null
+
+    findItemBySlug: (itemSlug, options={})->
+        options.modId ?= null
+
+        for modId, mod of @mods
+            continue if options.modId? and (options.modId isnt modId)
+
+            for itemId, item of @mods[modId].items
+                if item.slug is itemSlug
+                    return item
         return null
 
     findRecipe: (recipeId)->
