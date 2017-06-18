@@ -109,7 +109,7 @@ module.exports = class CommandParserVersionBase
             e.message = "line #{@_lineNumber}: #{e.message}"
             if not @_showAllErrors then throw e
             @errors.push e
-            logger.error -> e.message
+            logger.error -> e.stack or e.message
 
     _parseHereDoc: (line)->
         hereDocIndex = line.indexOf "<<-"

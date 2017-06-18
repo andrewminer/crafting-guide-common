@@ -5,6 +5,7 @@
 # All rights reserved.
 #
 
+_         = require "../../underscore"
 BaseModel = require "../base_model"
 c         = require "../../constants"
 
@@ -22,6 +23,7 @@ module.exports = class Mod extends BaseModel
         attributes.homePageUrl      ?= null
         attributes.modPack          ?= null
         attributes.name             ?= ""
+        attributes.video            ?= []
 
         super attributes, options
 

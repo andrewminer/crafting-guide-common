@@ -72,6 +72,14 @@ module.exports = class ModParserV1 extends CommandParserVersionBase
         @_rawData.versions ?= []
         @_rawData.versions.push version
 
+    _command_video: (youTubeId, nameParts...)->
+        if not youTubeId?.length then throw new Error 'video declaration requires a YouTubeID'
+        name = nameParts.join ', '
+        if not name?.length then throw new Error 'video declaration requires a name'
+
+        @_rawData.videos ?= []
+        @_rawData.videos.push youTubeId:youTubeId, name:name
+
     # Object Building Methods ######################################################################
 
     _buildMod: (rawData, model)->
@@ -85,6 +93,7 @@ module.exports = class ModParserV1 extends CommandParserVersionBase
         model.downloadUrl      = rawData.downloadUrl      if rawData.downloadUrl?
         model.name             = rawData.name
         model.homePageUrl      = rawData.homePageUrl
+        model.videos           = rawData.videos           if rawData.videos?
 
         if rawData.tutorialNames?
             for tutorialName in rawData.tutorialNames
