@@ -39,20 +39,21 @@ module.exports = class ModPackJsonParser
         result = if Number.isNaN result then defaultValue else result
         return result
 
-    _parseText: (text)->
-        try
-            obj = JSON.parse text
-        catch error
-            @_throwError "could not parse JSON: #{error}"
+    _parseItems: ->
+        return unless @_data.mods?
 
-        @_parseObject obj
+        for modData in @_data.mods
+            continue unless modData.items?
 
-    _parseObject: (obj)->
-        @_data = obj
-        @_parseModPack()
-        @_parseMods()
-        @_parseItems()
-        @_parseRecipes()
+            mod = @_modPack.mods[modData.id]
+            for itemData, index in modData.items
+                @_location = "<#{mod.id}>.items[#{index}]"
+                if not itemData.id? then @_throwError "item requires an id"
+                if not itemData.displayName? then @_throwError "item requires a displayName"
+
+                item = new Item mod:mod, id:itemData.id, displayName:itemData.displayName, groupName:itemData.groupName
+                item.isGatherable = itemData.gatherable if itemData.gatherable?
+                @_items.push item
 
     _parseModPack: ->
         if not @_data? then @_throwError "there is no valid data"
@@ -73,21 +74,12 @@ module.exports = class ModPackJsonParser
             if modData.author? then mod.author = modData.author
             if modData.description? then mod.description = modData.description
 
-    _parseItems: ->
-        return unless @_data.mods?
-
-        for modData in @_data.mods
-            continue unless modData.items?
-
-            mod = @_modPack.mods[modData.id]
-            for itemData, index in modData.items
-                @_location = "<#{mod.id}>.items[#{index}]"
-                if not itemData.id? then @_throwError "item requires an id"
-                if not itemData.displayName? then @_throwError "item requires a displayName"
-
-                item = new Item mod:mod, id:itemData.id, displayName:itemData.displayName, groupName:itemData.groupName
-                item.gatherable = itemData.gatherable if itemData.gatherable?
-                @_items.push item
+    _parseObject: (obj)->
+        @_data = obj
+        @_parseModPack()
+        @_parseMods()
+        @_parseItems()
+        @_parseRecipes()
 
     _parseRecipes: ->
         return unless @_data.mods?
@@ -145,6 +137,14 @@ module.exports = class ModPackJsonParser
         if not item? then @_throwError "there is no item #{index}"
 
         return new Stack item:item, quantity:quantity
+
+    _parseText: (text)->
+        try
+            obj = JSON.parse text
+        catch error
+            @_throwError "could not parse JSON: #{error}"
+
+        @_parseObject obj
 
     _reset: ->
         @_data = null

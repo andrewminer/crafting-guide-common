@@ -6,16 +6,13 @@
 #
 
 _          = require "../underscore"
+Item       = require "./item"
 Observable = require "../util/observable"
 Stack      = require "./stack"
 
 ########################################################################################################################
 
 module.exports = class Inventory extends Observable
-
-    @::DELIMITERS =
-        ITEM: "."
-        STACK: ":"
 
     constructor: (inventory=null)->
         super
@@ -25,9 +22,24 @@ module.exports = class Inventory extends Observable
 
         if inventory? then @merge inventory
 
+    # Constants ####################################################################################
+
+    # Events
+    @::ADD    = "add"
+    @::CLEAR  = "clear"
+    @::MERGE  = "merge"
+    @::REMOVE = "remove"
+
+    @::DELIMITERS =
+        ITEM: "."
+        STACK: ":"
+
     # Class Methods ################################################################################
 
     @fromUrlString: (urlString, modPack)->
+        if not urlString then return new Inventory
+        if not modPack? then throw new Error "modPack is required"
+
         result = new Inventory
 
         for stackPart in urlString.split @::DELIMITERS.STACK
@@ -63,6 +75,7 @@ module.exports = class Inventory extends Observable
     add: (item, quantity)->
         return unless item?
         return if quantity is 0
+        if not item.constructor is Item then throw new Error "item must be an Item"
 
         existingStack = @_stacks[item.id]
         if existingStack?
@@ -75,11 +88,11 @@ module.exports = class Inventory extends Observable
         if @_stacks[item.id].quantity is 0
             delete @_stacks[item.id]
 
-        @trigger if quantity > 0 then "add" else "remove"
+        @trigger if quantity > 0 then @ADD else @REMOVE
 
     clear: ->
         @_stacks = {}
-        @trigger "clear"
+        @trigger @CLEAR
 
     contains: (item)->
         return @_stacks[item.id]?
@@ -93,12 +106,23 @@ module.exports = class Inventory extends Observable
         @muted =>
             for id, stack of inventory.stacks
                 @add stack.item, stack.quantity
-        @trigger "merge"
+        @trigger @MERGE
 
     remove: (item, quantity)->
         @add item, -1 * quantity
 
     # Object Overrides #############################################################################
+
+    toDescription: ->
+        allStacks = (stack for itemId, stack of @stacks)
+        result = null
+
+        if allStacks.length is 1
+            result = allStacks[0].item.displayName
+        else if allStacks.length > 1
+            result = "#{allStacks[0].item.displayName} and #{allStacks.length - 1} more..."
+
+        return result
 
     toUrlString: ->
         parts = []

@@ -11,14 +11,20 @@ _ = require "../underscore"
 
 module.exports = class Observable
 
-    @::ANY = "any"
-
     constructor: ->
-        @_eventSources = []
-        @_firing       = false
-        @_isMuted      = false
-        @_listeners    = {}
-        @_listeningTo  = []
+        @_eventSources  = []
+        @_firing        = false
+        @_isMuted       = false
+        @_isChangeMuted = false
+        @_listeners     = {}
+        @_listeningTo   = []
+
+    # Class Properties #############################################################################
+
+    @::ANY       = "any"
+    @::CHANGE    = "change"
+    @::DELIMITER = ":"
+    @::PROP      = (name)-> return "#{Observable::CHANGE}#{Observable::DELIMITER}#{name}"
 
     # Properties ###################################################################################
 
@@ -77,7 +83,7 @@ module.exports = class Observable
     muted: (callback)->
         @_isMuted = true
         try
-            callback()
+            callback.call this
         finally
             @_isMuted = false
 
@@ -120,6 +126,22 @@ module.exports = class Observable
             throw error
 
         return this
+
+    triggerPropertyChange: (name, oldValue, newValue, callback)->
+        return false if oldValue is newValue
+
+        if callback?
+            wasChangeMuted = @_isChangeMuted
+            @_isChangeMuted = true
+            callback.call this, oldValue, newValue
+            @_isChangeMuted = wasChangeMuted
+        else
+            this["_#{name}"] = newValue
+
+        @trigger @PROP(name), oldValue, newValue
+        if not @_isChangeMuted then @trigger @CHANGE
+
+        return true
 
     # Private Methods ##############################################################################
 

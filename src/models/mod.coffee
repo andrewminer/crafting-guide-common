@@ -38,23 +38,19 @@ module.exports = class Mod extends Observable
             get: -> return @_author
             set: (author)->
                 author = if _.isString(author) and (author.length > 0) then author else null
-                @_author = author
-                @trigger "change", "author"
+                @triggerPropertyChange "author", @_author, author
 
         description:
             get: -> return @_description
             set: (description)->
                 description = if _.isString(description) and (description.length > 0) then description else null
-                @_description = description
-                @trigger "change", "description"
+                @triggerPropertyChange "description", @_description, description
 
         displayName:
             get: -> return @_displayName
             set: (displayName)->
                 if not displayName? then throw new Error "displayName is required"
-                return if @_displayName is displayName
-                @_displayName = displayName
-                @trigger "change", "displayName"
+                @triggerPropertyChange "displayName", @_displayName, displayName
 
         id:
             get: -> return @_id
@@ -63,13 +59,10 @@ module.exports = class Mod extends Observable
                 return if @_id is id
                 if @_id? then throw new Error "id cannot be reassigned"
                 @_id = id
-                @trigger "change", "id"
 
         isEnabled:
             get: -> return @_isEnabled
-            set: (isEnabled)->
-                @_isEnabled = !! isEnabled
-                @trigger "change", "isEnabled"
+            set: (isEnabled)-> @triggerPropertyChange "isEnabled", @_isEnabled, isEnabled
 
         itemGroups:
             get: -> return @_itemGroups
@@ -87,7 +80,6 @@ module.exports = class Mod extends Observable
                 if @_modPack? then throw new Error "modPack cannot be reassigned"
                 @_modPack = modPack
                 @_modPack.addMod this
-                @trigger "change", "modPack"
 
         tutorials:
             get: -> return @_tutorials
@@ -97,8 +89,7 @@ module.exports = class Mod extends Observable
             get: -> return @_version
             set: (version)->
                 if not _.isString(version) then version = null
-                @_version = version
-                @trigger "change", "version"
+                @triggerPropertyChange "version", @_version, version
 
     # Public Methods ###############################################################################
 

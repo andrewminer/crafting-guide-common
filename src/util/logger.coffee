@@ -18,8 +18,9 @@ module.exports = class Logger
     @WARNING = {name:'WARNING', value:4, print:console.warn}
     @ERROR   = {name:'ERROR  ', value:5, print:console.error}
     @FATAL   = {name:'FATAL  ', value:6, print:console.error}
+    @OFF     = {name:'OFF    ', value:7, print:(->)}
 
-    ALL_LEVELS = [@TRACE, @DEBUG, @VERBOSE, @INFO, @WARNING, @ERROR, @FATAL]
+    ALL_LEVELS = [@TRACE, @DEBUG, @VERBOSE, @INFO, @WARNING, @ERROR, @FATAL, @OFF]
 
     constructor: (options={})->
         options.level ?= Logger.FATAL

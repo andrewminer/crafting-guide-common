@@ -28,9 +28,7 @@ module.exports = class ModPack extends Observable
             get: -> return @_displayName
             set: (displayName)->
                 if not displayName? then throw new Error "displayName is required"
-                if @_displayName is displayName then return
-                @_displayName = displayName
-                @trigger "change", "displayName"
+                @triggerPropertyChange "displayName", @_displayName, displayName
 
         id: # a string which uniquely identifies this ModPack
             get: -> return @_id

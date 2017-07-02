@@ -36,10 +36,10 @@ module.exports = class Item extends Observable
             get: -> return @_displayName
             set: (displayName)->
                 if not displayName? then throw new Error "displayName is required"
-                @_displayName = displayName
-                @_slug = null
-                @_qualifiedSlug = null
-                @trigger "change", "displayName"
+                @triggerPropertyChange "displayName", @_displayName, displayName, ->
+                    @_displayName = displayName
+                    @_slug = null
+                    @_qualifiedSlug = null
 
         firstRecipe: # the first Recipe returned by iterating the `recipes` property
             get: ->
@@ -53,8 +53,7 @@ module.exports = class Item extends Observable
             set: (groupName)->
                 groupName = if groupName then groupName else @DEFAULT_GROUP_NAME
                 if @_groupName? then throw new Error "groupName cannot be reassigned"
-                @_groupName = groupName
-                @trigger "change", "groupName"
+                @triggerPropertyChange "groupName", @_groupName, groupName
 
         id: # a string containing a unique identifier for this item
             get: -> return @_id
@@ -64,12 +63,12 @@ module.exports = class Item extends Observable
                 if @_id? then throw new Error "id cannot be reassigned"
                 @_id = id
 
+        isCraftable:
+            get: -> return @firstRecipe?
+
         isGatherable: # whether this item can be gathered directly without needing to be crafted
-            get: ->
-                return @_isGatherable
-            set: (isGatherable)->
-                @_isGatherable = !!isGatherable
-                @trigger "change", "isGatherable"
+            get: -> return @_isGatherable
+            set: (isGatherable)-> @triggerPropertyChange "isGatherable", @_isGatherable, !!isGatherable
 
         isMultiblock: # whether this item is made as a 3D construction from multiple blocks
             get: ->

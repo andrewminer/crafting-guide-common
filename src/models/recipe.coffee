@@ -41,8 +41,7 @@ module.exports = class Recipe extends Observable
             set: (depth)->
                 depth = parseInt "#{depth}"
                 depth = if Number.isNaN(depth) then 0 else Math.max(0, depth)
-                @_depth = depth
-                @trigger "change", "depth"
+                @triggerPropertyChange "depth", @_depth, depth
 
         extras: # a hash of item id to Stack of all the non-primary outputs of this recipe
             get: -> return @_extras
@@ -61,8 +60,7 @@ module.exports = class Recipe extends Observable
             set: (height)->
                 height = parseInt "#{height}"
                 height = if Number.isNaN(height) then 0 else Math.max(0, height)
-                @_height = height
-                @trigger "change", "height"
+                @triggerPropertyChange "height", @_height, height
 
         inputs: # a hash of item id to Item containing all the inputs to this recipe
             get: -> return @_inputs
@@ -77,9 +75,9 @@ module.exports = class Recipe extends Observable
                 if not output? then throw new Error "output is required"
                 if @_output is output then return
                 if @_output? then throw new Error "output cannot be reassigned"
-                @_output = output
-                @_output.item.addRecipe this
-                @trigger "change", "output"
+                @triggerPropertyChange "output", @_output, output, ->
+                    @_output = output
+                    @_output.item.addRecipe this
 
         modPack: # the ModPack to which this recipe belongs
             get: -> return @_output.modPack
@@ -94,8 +92,7 @@ module.exports = class Recipe extends Observable
             set: (width)->
                 width = parseInt "#{width}"
                 width = if Number.isNaN(width) then 0 else Math.max(0, width)
-                @_width = width
-                @trigger "change", "width"
+                @triggerPropertyChange "width", @_width, width
 
     # Public Methods ###############################################################################
 

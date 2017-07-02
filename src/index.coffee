@@ -12,6 +12,15 @@ module.exports =
         TestHttpServer:       require "./api/test_http_server"
         http:                 require "./api/http"
 
+    crafting:
+        CraftingPlan:         require "./crafting/crafting_plan"
+        CraftingPlanStep:     require "./crafting/crafting_plan_step"
+        Evaluation:           require "./crafting/evaluation"
+        Evaluator:            require "./crafting/evaluator"
+        PlanBuilder:          require "./crafting/plan_builder"
+        ResourcesEvaluator:   require "./crafting/resources_evaluator"
+        StepsEvaluator:       require "./crafting/steps_evaluator"
+
     deprecated:
         crafting:
             CraftingNode:     require "./deprecated/crafting/crafting_node"

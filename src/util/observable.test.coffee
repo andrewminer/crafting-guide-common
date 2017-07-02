@@ -10,7 +10,7 @@ Observable = require "./observable"
 
 describe "Observable", ->
 
-    error = newSpy = oldSpy = source = source2 = target = target2 = null
+    error = newSpy = oldSpy = setterSpy = source = source2 = target = target2 = null
 
     beforeEach ->
         source = new Observable
@@ -322,3 +322,156 @@ describe "Observable", ->
                 source.hasListener("event2", target2, "onAction2").should.equal true
                 source2.hasListener("event", target2, "onAction").should.equal true
                 source2.hasListener("event2", target2, "onAction2").should.equal true
+
+    describe "with a default property listener", ->
+
+        beforeEach ->
+            Object.defineProperty source, "alpha",
+                get: -> return @_alpha
+                set: (newAlpha)-> @reallyChanged = @triggerPropertyChange "alpha", @_alpha, newAlpha
+
+            source.on Observable::PROP("alpha"), target, "onAction"
+            source.on Observable::CHANGE, target, "onAction2"
+
+        describe "updating the property to a new value", ->
+
+            beforeEach -> source.alpha = "a"
+
+            it "fires a property change event", ->
+                target.onAction.should.have.been.calledWith "change:alpha", source, undefined, "a"
+                target.onAction.should.have.been.calledOnce
+
+            it "fires a generic change event", ->
+                target.onAction2.should.have.been.calledWith "change", source
+                target.onAction2.should.have.been.calledOnce
+
+            it "the source really changed", ->
+                source.alpha.should.equal "a"
+                source.reallyChanged.should.equal true
+
+            describe "then setting it to the same value again", ->
+
+                beforeEach ->
+                    target.onAction.reset()
+                    target.onAction2.reset()
+                    delete source.reallyChanged
+                    source.alpha = "a"
+
+                it "no new events are fired", ->
+                    target.onAction.should.not.have.been.called
+                    target.onAction2.should.not.have.been.called
+
+                it "the source didn't change", ->
+                    source.alpha.should.equal "a"
+                    source.reallyChanged.should.equal false
+
+            describe "then setting it to a different value", ->
+
+                beforeEach ->
+                    target.onAction.reset()
+                    target.onAction2.reset()
+                    delete source.reallyChanged
+                    source.alpha = "b"
+
+                it "fires a property change event", ->
+                    target.onAction.should.have.been.calledWith "change:alpha", source, "a", "b"
+                    target.onAction.should.have.been.calledOnce
+
+                it "fires a generic change event", ->
+                    target.onAction2.should.have.been.calledWith "change", source
+                    target.onAction2.should.have.been.calledOnce
+
+                it "the source really changed", ->
+                    source.alpha.should.equal "b"
+                    source.reallyChanged.should.equal true
+
+    describe "with a custom property setter", ->
+
+        beforeEach ->
+            setterSpy = sinon.stub().callsFake (oldValue, newValue)-> source._alpha = newValue
+
+            Object.defineProperty source, "alpha",
+                get: -> return @_alpha
+                set: (newAlpha)-> @triggerPropertyChange "alpha", @_alpha, newAlpha, setterSpy
+
+            source.on Observable::PROP("alpha"), target, "onAction"
+            source.on Observable::CHANGE, target, "onAction2"
+
+        describe "updating the property to a new value", ->
+
+            beforeEach -> source.alpha = "a"
+
+            it "the callback is given the old and new values", ->
+                setterSpy.should.have.been.calledWith undefined, "a"
+
+            it "the source really changed", ->
+                source.alpha.should.equal "a"
+
+            describe "then setting it to a different value", ->
+
+                beforeEach -> source.alpha = "b"
+
+                it "the callback is given the old and new values", ->
+                    setterSpy.should.have.been.calledWith "a", "b"
+
+                it "the source really changed", ->
+                    source.alpha.should.equal "b"
+
+    describe "with cascading property changes", ->
+
+        beforeEach ->
+            Object.defineProperties source,
+                lowerCase:
+                    get: -> return @_lowerCase
+                    set: (value)->
+                        value = value.toLowerCase()
+                        @triggerPropertyChange "lowerCase", @_lowerCase, value, ->
+                            @_lowerCase = value
+                            @upperCase = value
+
+                upperCase:
+                    get: -> return @_upperCase
+                    set: (value)->
+                        value = value.toUpperCase()
+                        @triggerPropertyChange "upperCase", @_upperCase, value, ->
+                            @_upperCase = value
+                            @lowerCase = value
+
+            source.on Observable::PROP("lowerCase"), target, "onAction"
+            source.on Observable::PROP("upperCase"), target, "onAction"
+            source.on Observable::CHANGE, target, "onAction2"
+
+        describe "when changing one property's value", ->
+
+            beforeEach -> source.lowerCase = "ALPHA"
+
+            it "updates both properties", ->
+                source.lowerCase.should.equal "alpha"
+                source.upperCase.should.equal "ALPHA"
+
+            it "fires the expected events", ->
+                target.onAction.should.have.been.calledWith "change:lowerCase", source, undefined, "alpha"
+                target.onAction.should.have.been.calledWith "change:upperCase", source, undefined, "ALPHA"
+                target.onAction.should.have.been.calledTwice
+
+                target.onAction2.should.have.been.calledWith "change", source
+                target.onAction2.should.have.been.calledOnce
+
+            describe "then the other property is changed", ->
+
+                beforeEach ->
+                    target.onAction.reset()
+                    target.onAction2.reset()
+                    source.upperCase = "bravo"
+
+                it "updates both properties", ->
+                    source.lowerCase.should.equal "bravo"
+                    source.upperCase.should.equal "BRAVO"
+
+                it "fires the expected events", ->
+                    target.onAction.should.have.been.calledWith "change:lowerCase", source, "alpha", "bravo"
+                    target.onAction.should.have.been.calledWith "change:upperCase", source, "ALPHA", "BRAVO"
+                    target.onAction.should.have.been.calledTwice
+
+                    target.onAction2.should.have.been.calledWith "change", source
+                    target.onAction2.should.have.been.calledOnce

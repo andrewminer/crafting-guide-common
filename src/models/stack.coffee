@@ -5,6 +5,7 @@
 # All rights reserved.
 #
 
+Item       = require "./item"
 Observable = require "../util/observable"
 
 ########################################################################################################################
@@ -26,6 +27,7 @@ module.exports = class Stack extends Observable
             get: -> return @_item
             set: (item)->
                 if not item? then throw new Error "item is required"
+                if not item.constructor is Item then throw new Error "item must be a Item"
                 if @_item is item then return
                 if @_item? then throw new Error "item cannot be reassigned"
                 @_item = item
@@ -38,9 +40,8 @@ module.exports = class Stack extends Observable
             get: -> return @_quantity
             set: (quantity)->
                 quantity = parseInt "#{quantity}"
-                quantity = if Number.isNaN(quantity) then 0 else Math.max(0, quantity)
-                @_quantity = quantity
-                @trigger "change", "quantity"
+                quantity = if Number.isNaN(quantity) then 1 else Math.max(0, quantity)
+                @triggerPropertyChange "quantity", @_quantity, quantity
 
     # Object Overrides #############################################################################
 
