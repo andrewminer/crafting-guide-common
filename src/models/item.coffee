@@ -123,6 +123,11 @@ module.exports = class Item extends Observable
 
         @trigger "addRecipe"
 
+    getMultiblockRecipe: ->
+        for recipeId, recipe of @recipes
+            return recipe if recipe.depth > 1
+        return null
+
     # Object Overrides #############################################################################
 
     toString: ->
