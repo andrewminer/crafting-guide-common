@@ -48,7 +48,7 @@ module.exports = class PlanBuilder
     # Private Methods ##############################################################################
 
     _findStepsForItem: (item, quantity=1)->
-        logger.debug "_findStepsForItem: (#{item}, #{quantity})->"
+        logger.debug -> "_findStepsForItem: (#{item}, #{quantity})->"
         logger.indent()
         return null if item.isGatherable
 
@@ -69,12 +69,12 @@ module.exports = class PlanBuilder
 
             delete @_alreadyMaking[item.id]
 
-        logger.debug "steps: #{steps?.join("\n")}"
+        logger.debug -> "steps: #{steps?.join("\n")}"
         logger.outdent()
         return steps
 
     _findStepsForRecipe: (recipe, quantity=1)->
-        logger.debug "_findStepsForRecipe: (#{recipe}, #{quantity})->"
+        logger.debug -> "_findStepsForRecipe: (#{recipe}, #{quantity})->"
         logger.indent()
         steps = null
 
@@ -101,6 +101,6 @@ module.exports = class PlanBuilder
 
             delete @_recipesInUse[recipe.id]
 
-        logger.debug "steps: #{steps?.join("\n")}"
+        logger.debug -> "steps: #{steps?.join("\n")}"
         logger.outdent()
         return steps
