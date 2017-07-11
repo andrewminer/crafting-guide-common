@@ -12,7 +12,7 @@ _ = require 'underscore'
 module.exports = class Logger
 
     @TRACE   = {name:'TRACE  ', value:0, print:console.trace}
-    @DEBUG   = {name:'DEBUG  ', value:1, print:console.debug}
+    @DEBUG   = {name:'DEBUG  ', value:1, print:console.info}
     @VERBOSE = {name:'VERBOSE', value:2, print:console.log}
     @INFO    = {name:'INFO   ', value:3, print:console.info}
     @WARNING = {name:'WARNING', value:4, print:console.warn}
@@ -46,7 +46,7 @@ module.exports = class Logger
 
         lines = @_formatEntry entry
         entry.level.print ?= console.log
-        entry.level.print.call console, line for line in lines
+        setTimeout entry.level.print.bind console, line for line in lines
 
     outdent: ->
         @_indent = @_indent[0...@_indent.length - 4]
