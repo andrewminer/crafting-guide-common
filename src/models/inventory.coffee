@@ -108,7 +108,8 @@ module.exports = class Inventory extends Observable
                 @add stack.item, stack.quantity
         @trigger @MERGE
 
-    remove: (item, quantity)->
+    remove: (item, quantity=null)->
+        quantity ?= @getQuantity item
         @add item, -1 * quantity
 
     # Object Overrides #############################################################################

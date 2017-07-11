@@ -92,6 +92,25 @@ describe "An Inventory", ->
                 observer.onEvent.should.have.been.calledWith "remove", inventory
                 observer.onEvent.should.have.been.calledOnce
 
+        describe "then removing all cakes", ->
+
+            beforeEach ->
+                observer.onEvent.reset()
+                inventory.remove cake
+
+            it "has no more cakes", ->
+                inventory.getQuantity(cake).should.equal 0
+
+            it "still has the same number of swords", ->
+                inventory.getQuantity(sword).should.equal 3
+
+            it "has a URL string with no cakes", ->
+                inventory.toUrlString().should.equal "3.test__iron_sword"
+
+            it "a remove event was fired", ->
+                observer.onEvent.should.have.been.calledWith "remove", inventory
+                observer.onEvent.should.have.been.calledOnce
+
         describe "then merging in a different inventory", ->
 
             beforeEach ->
