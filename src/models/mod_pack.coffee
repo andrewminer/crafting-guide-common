@@ -65,6 +65,13 @@ module.exports = class ModPack extends Observable
 
         return null
 
+    findItemByName: (name)->
+        for modId, mod of @mods
+            for itemId, item of mod.items
+                if item.displayName is name
+                    return item
+        return null
+
     findItemBySlug: (itemSlug, options={})->
         options.modId ?= null
 
