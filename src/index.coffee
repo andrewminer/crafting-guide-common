@@ -8,6 +8,7 @@
 module.exports =
     api:
         CraftingGuideClient:  require "./api/crafting_guide_client"
+        ItemDetailStore:      require "./api/item_detail_store"
         ModPackStore:         require "./api/mod_pack_store"
         TestHttpServer:       require "./api/test_http_server"
         http:                 require "./api/http"

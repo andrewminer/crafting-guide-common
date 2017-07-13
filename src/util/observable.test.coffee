@@ -475,3 +475,42 @@ describe "Observable", ->
 
                     target.onAction2.should.have.been.calledWith "change", source
                     target.onAction2.should.have.been.calledOnce
+
+    describe "when nested methods each try to mute events", ->
+
+        beforeEach ->
+            source.doTopThing = ->
+                @muted => @doMiddleThing()
+                @trigger "top"
+            source.doMiddleThing = ->
+                @muted => @doBottomThing()
+                @trigger "middle"
+            source.doBottomThing = ->
+                @trigger "bottom"
+
+            source.on Observable::ANY, target, "onAction"
+
+        describe "calling the bottom method", ->
+
+            beforeEach -> source.doBottomThing()
+
+            it "only fires a 'bottom' event", ->
+                target.onAction.should.have.been.calledWith "bottom", source
+                target.onAction.should.have.been.calledOnce
+
+        describe "calling the middle method", ->
+
+            beforeEach -> source.doMiddleThing()
+
+            it "only fires a 'middle' event", ->
+                target.onAction.should.have.been.calledWith "middle", source
+                target.onAction.should.have.been.calledOnce
+
+        describe "calling the top method", ->
+
+            beforeEach -> source.doTopThing()
+
+            it "only fires a 'top' event", ->
+                target.onAction.should.have.been.calledWith "top", source
+                target.onAction.should.have.been.calledOnce
+

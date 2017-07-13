@@ -14,7 +14,7 @@ module.exports = class Observable
     constructor: ->
         @_eventSources  = []
         @_firing        = false
-        @_isMuted       = false
+        @_muteDepth     = 0
         @_isChangeMuted = false
         @_listeners     = {}
         @_listeningTo   = []
@@ -81,14 +81,14 @@ module.exports = class Observable
     # Protected Methods ############################################################################
 
     muted: (callback)->
-        @_isMuted = true
+        @_muteDepth++
         try
             callback.call this
         finally
-            @_isMuted = false
+            @_muteDepth--
 
     trigger: (event, args...)->
-        return if @_isMuted
+        return if @_muteDepth > 0
         return this unless @_listeners[event]? or @_listeners[@ANY]?
 
         if @_firing then throw new Error "event cycle detected while firing #{event}"

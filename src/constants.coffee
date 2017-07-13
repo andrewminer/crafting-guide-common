@@ -46,7 +46,7 @@ exports.requiredMods = [ 'minecraft' ]
 exports.url          = url = {}
 url.crafting         = _.template "/craft/<%= inventoryText %>"
 url.item             = _.template "/browse/<%= modId %>/<%= itemSlug %>/"
-url.itemData         = _.template "/data/<%= modId %>/items/<%= itemSlug %>/item.cg"
+url.itemData         = _.template "/data/<%= modId %>/items/<%= itemSlug %>/item.json"
 url.itemIcon         = _.template "/data/<%= modId %>/items/<%= itemSlug %>/icon.png"
 url.itemImageDir     = _.template "/data/<%= modId %>/items/<%= itemSlug %>"
 url.login            = _.template "/login"
@@ -60,3 +60,4 @@ url.tutorialData     = _.template "/data/<%= modId %>/tutorials/<%= tutorialSlug
 url.tutorialIcon     = _.template "/data/<%= modId %>/tutorials/<%= tutorialSlug %>/icon.png"
 url.tutorialIcon     = _.template "/data/<%= modId %>/tutorials/<%= tutorialSlug %>/icon.png"
 url.tutorialImageDir = _.template "/data/<%= modId %>/tutorials/<%= tutorialSlug %>"
+

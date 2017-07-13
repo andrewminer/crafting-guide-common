@@ -5,39 +5,36 @@
 # All rights reserved.
 #
 
-_       = require "underscore"
-Item    = require "../../models/item"
-Mod     = require "../../models/mod"
-ModPack = require "../../models/mod_pack"
-Recipe  = require "../../models/recipe"
-Stack   = require "../../models/stack"
+_          = require "underscore"
+Item       = require "../../models/item"
+Mod        = require "../../models/mod"
+ModPack    = require "../../models/mod_pack"
+ParserBase = require "./parser_base"
+Recipe     = require "../../models/recipe"
+Stack      = require "../../models/stack"
 
 ########################################################################################################################
 
-module.exports = class ModPackJsonParser
+module.exports = class ModPackJsonParser extends ParserBase
 
-    constructor: ->
-        @_reset()
+    # ParserBase Overrides #########################################################################
 
-    # Public Methods ###############################################################################
+    _parseObject: (obj)->
+        super
 
-    parse: (arg, fileName=null)->
-        @_reset()
-        @_fileName = fileName
+        @_parseModPack()
+        @_parseMods()
+        @_parseItems()
+        @_parseRecipes()
 
-        if _.isString arg
-            @_parseText arg
-        else
-            @_parseObject arg
+    _reset: ->
+        super
 
-        return @_modPack
+        @_items = []
+        @_location = null
+        @_model = null
 
     # Private Methods ##############################################################################
-
-    _parseInteger: (text, defaultValue)->
-        result = parseInt "#{text}"
-        result = if Number.isNaN result then defaultValue else result
-        return result
 
     _parseItems: ->
         return unless @_data.mods?
@@ -45,7 +42,7 @@ module.exports = class ModPackJsonParser
         for modData in @_data.mods
             continue unless modData.items?
 
-            mod = @_modPack.mods[modData.id]
+            mod = @_model.mods[modData.id]
             for itemData, index in modData.items
                 @_location = "<#{mod.id}>.items[#{index}]"
                 if not itemData.id? then @_throwError "item requires an id"
@@ -60,7 +57,7 @@ module.exports = class ModPackJsonParser
         if not @_data.id? then @_throwError "modPack requires an id"
         if not @_data.displayName? then @_throwError "modPack requires a displayName"
 
-        @_modPack = new ModPack id:@_data.id, displayName:@_data.displayName
+        @_model = new ModPack id:@_data.id, displayName:@_data.displayName
 
     _parseMods: ->
         return unless @_data.mods?
@@ -70,16 +67,9 @@ module.exports = class ModPackJsonParser
             if not modData.id? then @_throwError "mod requires an id"
             if not modData.displayName? then @_throwError "mod requires a displayName"
 
-            mod = new Mod modPack:@_modPack, id:modData.id, displayName:modData.displayName
+            mod = new Mod modPack:@_model, id:modData.id, displayName:modData.displayName
             if modData.author? then mod.author = modData.author
             if modData.description? then mod.description = modData.description
-
-    _parseObject: (obj)->
-        @_data = obj
-        @_parseModPack()
-        @_parseMods()
-        @_parseItems()
-        @_parseRecipes()
 
     _parseRecipes: ->
         return unless @_data.mods?
@@ -87,7 +77,7 @@ module.exports = class ModPackJsonParser
         for modData in @_data.mods
             continue unless modData.items?
 
-            mod = @_modPack.mods[modData.id]
+            mod = @_model.mods[modData.id]
             for itemData, index in modData.items
                 continue unless itemData.recipes?
 
@@ -138,30 +128,3 @@ module.exports = class ModPackJsonParser
 
         return new Stack item:item, quantity:quantity
 
-    _parseText: (text)->
-        try
-            obj = JSON.parse text
-        catch error
-            @_throwError "could not parse JSON: #{error}"
-
-        @_parseObject obj
-
-    _reset: ->
-        @_data = null
-        @_fileName = null
-        @_items = []
-        @_location = null
-        @_modPack = null
-
-    _throwError: (message, cause=null)->
-        if @_location? then message = "#{@_location}: #{message}"
-        if @_fileName? and @_location? then message = "@#{message}"
-        if @_fileName? then message = "#{@_fileName}#{message}"
-        if cause? then message = "#{message}: #{cause}"
-
-        error = new Error message
-        error.cause = cause if cause?
-        error.fileName = @_fileName if @_fileName?
-        error.location = @_location if @_location?
-
-        throw error

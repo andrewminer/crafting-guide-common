@@ -27,6 +27,7 @@ module.exports = class Inventory extends Observable
     # Events
     @::ADD    = "add"
     @::CLEAR  = "clear"
+    @::CHANGE = "change"
     @::MERGE  = "merge"
     @::REMOVE = "remove"
 
@@ -80,12 +81,15 @@ module.exports = class Inventory extends Observable
         existingStack = @_stacks[item.id]
         if existingStack?
             if existingStack.quantity + quantity < 0 then throw new Error "cannot have a negative quantity"
-            existingStack.quantity += quantity
+            @muted -> existingStack.quantity += quantity
         else
             if quantity < 0 then throw new Error "cannot have a negative quantity"
-            @_stacks[item.id] = new Stack item:item, quantity:quantity
+            stack = new Stack item:item, quantity:quantity
+            stack.on "change:quantity", this, "_onStackChanged"
+            @_stacks[item.id] = stack
 
         if @_stacks[item.id].quantity is 0
+            @_stacks[item.id].off Observable::ANY, this
             delete @_stacks[item.id]
 
         @trigger if quantity > 0 then @ADD else @REMOVE
@@ -158,3 +162,9 @@ module.exports = class Inventory extends Observable
             return result.join ""
         else
             return "Inventory<#{@_id}>@#{(id for id, item of @_stacks).length}"
+
+    # Private Methods ##############################################################################
+
+    _onStackChanged: ->
+        @trigger @CHANGE
+

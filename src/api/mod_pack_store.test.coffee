@@ -23,7 +23,7 @@ describe "ModPackStore", ->
         baseUrl = "http://localhost:8080/api"
         loading = null
         http    = get:sinon.stub().callsFake -> return loading
-        store   = new ModPackStore http, baseUrl
+        store   = new ModPackStore http:http, baseUrl:baseUrl
 
     describe "by default", ->
 

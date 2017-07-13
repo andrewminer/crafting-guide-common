@@ -19,6 +19,7 @@ module.exports = class Item extends Observable
 
         @muted =>
             @id           = attributes.id
+            @detail       = attributes.detail
             @displayName  = attributes.displayName
             @groupName    = attributes.groupName
             @isGatherable = attributes.isGatherable
@@ -28,9 +29,23 @@ module.exports = class Item extends Observable
         @_recipesAsPrimary = {}
         @_recipesAsExtra = {}
 
+    # Class Properties #############################################################################
+
+    @::ADD_RECIPE = "add-recipe"
+
     # Property Methods #############################################################################
 
     Object.defineProperties @prototype,
+
+        detail: # extra data which can be loaded separately
+            get: -> return @_detail
+            set: (detail)->
+                ItemDetail = require "./item_detail" # avoid circular dependency
+                detail = if detail? then detail else null
+                if detail? and detail.constructor isnt ItemDetail then throw new Error "detail must be an ItemDetail"
+                @triggerPropertyChange "detail", @_detail, detail, ->
+                    @_detail = detail
+                    if @_detail? then @_detail.item = this
 
         displayName: # a string containing the user-facing name of this item
             get: -> return @_displayName
@@ -63,7 +78,7 @@ module.exports = class Item extends Observable
                 if @_id? then throw new Error "id cannot be reassigned"
                 @_id = id
 
-        isCraftable:
+        isCraftable: # whether this item has any recipes
             get: -> return @firstRecipe?
 
         isGatherable: # whether this item can be gathered directly without needing to be crafted
@@ -106,7 +121,7 @@ module.exports = class Item extends Observable
             get: -> return @_recipesAsExtra
             set: -> throw new Error "recipesAsExtra cannot be assigned"
 
-        slug:
+        slug: # a simplified string version of this item's name (without the mod name portion)
             get: -> return @_slug ?= _.slugify @displayName
             set: -> throw new Error "slug cannot be assigned"
 
@@ -121,7 +136,7 @@ module.exports = class Item extends Observable
         else
             throw new Error "recipe<#{recipe.id}> does not produce this item<#{@id}>"
 
-        @trigger "addRecipe"
+        @trigger @ADD_RECIPE
 
     getMultiblockRecipe: ->
         for recipeId, recipe of @recipes
@@ -132,3 +147,4 @@ module.exports = class Item extends Observable
 
     toString: ->
         return "Item:#{@displayName}<#{@id}>"
+
