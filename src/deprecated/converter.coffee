@@ -41,6 +41,10 @@ module.exports = class Converter
             oldMod.eachRecipe (oldRecipe)=>
                 @_convertRecipe oldRecipe, newModPack
 
+        oldModPack.eachMod (oldMod)=>
+            oldMod.eachItem (oldItem)=>
+                @_convertMultiblock oldItem, newModPack
+
         return newModPack
 
     # Private Methods ##############################################################################
@@ -62,6 +66,35 @@ module.exports = class Converter
             version:     oldMod.activeModVersion.version
 
         oldMod.eachItem (oldItem)=> @_convertItem oldItem, newMod
+
+    _convertMultiblock: (oldItem, newModPack)->
+        return unless oldItem.multiblock?
+        oldMultiblock = oldItem.multiblock
+        oldModPack = oldItem.modVersion.mod.modPack
+
+        newItem = newModPack.findItem oldItem.slug.toString()
+        if not newItem?
+            throw new Error "Could not find #{newItem.slug} as output for a new recipe"
+
+        newOutputStack = new Stack item:newItem, quantity:1
+        recipe = new Recipe id:_.uniqueId("recipe-"), output:newOutputStack
+
+        for x in [0..oldMultiblock.width]
+            for y in [0..oldMultiblock.height]
+                for z in [0..oldMultiblock.depth]
+                    oldOutputStack = oldMultiblock.getStackAt x, y, z
+                    continue unless oldOutputStack?
+
+                    oldOutputItem = oldModPack.findItem oldOutputStack.itemSlug
+                    if not oldOutputItem?
+                        throw new Error "Could not find old item for #{oldOutputStack.itemSlug} for a new recipe"
+
+                    newItem = newModPack.findItem oldOutputItem.slug.toString()
+                    if not newItem?
+                        throw new Error "Could not find new item for #{oldOutputStack.itemSlug} for a new recipe"
+
+                    newStack = new Stack item:newItem, quantity:oldOutputStack.quantity
+                    recipe.setInputAt x, y, z, newStack
 
     _convertRecipe: (oldRecipe, newModPack)->
         oldModPack = oldRecipe.modVersion.mod.modPack
