@@ -61,12 +61,14 @@ module.exports =
         fixtures:             require "./models/fixtures"
         Inventory:            require "./models/inventory"
         Item:                 require "./models/item"
+        ItemDetail:           require "./models/item_detail"
         ModPack:              require "./models/mod_pack"
         Mod:                  require "./models/mod"
         Recipe:               require "./models/recipe"
         Stack:                require "./models/stack"
 
     parsing:
+        ItemDetailJsonParser: require "./parsing/json/item_detail_json_parser"
         ModPackJsonFormatter: require "./parsing/json/mod_pack_json_formatter"
         ModPackJsonParser:    require "./parsing/json/mod_pack_json_parser"
 

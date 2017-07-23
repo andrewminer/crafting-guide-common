@@ -26,8 +26,21 @@ module.exports = class ParserBase
             @_parseObject arg
 
         return @_model
+
+    format: (model, options={})->
+        @_reset()
+        @_formatObject model
+        @_data ?= {}
+        return JSON.stringify @_data, options.replacer, options.indent
     
     # Overridable Methods ##########################################################################
+    
+    _formatObject: (model)->
+        @_model = model
+
+        # Subclasses may override this method to provide their own formatting functionality. They should begin by
+        # calling this implementation, and then do their own work. The result should be an object which can be passsed
+        # to JSON.stringify placed in the @_data instance variable.
     
     _parseObject: (obj)->
         @_data = obj

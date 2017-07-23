@@ -17,17 +17,44 @@ module.exports = class ItemDetailJsonParser extends ParserBase
 
     constructor: (item)->
         super
-
         @_item = item
 
     # ParserBase Overrides #########################################################################
+    
+    _formatObject: (model)->
+        super
+        @_data = @_formatItemDetail model
 
     _parseObject: (obj)->
         super
-
         @_model = @_parseItemDetail obj
     
     # Private Methods ##############################################################################
+    
+    # Formatting Methods ###########################################################################
+    
+    _formatItemDetail: (itemDetail)->
+        data = description:itemDetail.description
+
+        if itemDetail.links.length > 0
+            data.links = []
+            for link in itemDetail.links
+                data.links.push @_formatLink link
+
+        if itemDetail.videos.length > 0
+            data.videos = []
+            for video in itemDetail.videos
+                data.videos.push @_formatVideo video
+
+        return data
+
+    _formatLink: (link)->
+        return name:link.name, url:link.url
+
+    _formatVideo: (video)->
+        return name:video.name, youTubeId:video.youTubeId
+    
+    # Parsing Methods ##############################################################################
     
     _parseItemDetail: (data)->
         detail = new ItemDetail item:@_item
