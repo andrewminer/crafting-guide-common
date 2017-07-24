@@ -57,7 +57,7 @@ module.exports = class CraftingPlanStep
     # Object Overrides #############################################################################
 
     toString: ->
-        return "CraftingPlanStep:#{@_recipe}×#{@_count}<#{@_id}>"
+        return "CraftingPlanStep:#{@_recipe.output}×#{@_count}<#{@_id}>"
 
     # Private Methods ##############################################################################
 

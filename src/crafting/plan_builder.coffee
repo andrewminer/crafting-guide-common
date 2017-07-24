@@ -64,12 +64,19 @@ module.exports = class PlanBuilder
                 for recipe in recipes
                     continue if @_recipesInUse[recipe.id]?
 
+                    skipRecipe = false
+                    for itemId, toolItem of recipe.tools
+                        skipRecipe = true if @_alreadyMaking[itemId]
+                        break
+
+                    continue if skipRecipe
+
                     steps = @_findStepsForRecipe recipe, quantity
                     break if steps?
 
             delete @_alreadyMaking[item.id]
 
-        logger.debug -> "steps: #{steps?.join("\n")}"
+        @_logSteps steps
         logger.outdent()
         return steps
 
@@ -101,6 +108,13 @@ module.exports = class PlanBuilder
 
             delete @_recipesInUse[recipe.id]
 
-        logger.debug -> "steps: #{steps?.join("\n")}"
+        @_logSteps steps
         logger.outdent()
         return steps
+
+    _logSteps: (steps)->
+        logger.debug -> "steps: ["
+        logger.indent()
+        logger.debug -> steps?.join("\n")
+        logger.outdent()
+        logger.debug -> "]"
